@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="128" y1="128" x2="384" y2="384" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="256" y1="96" x2="256" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#06b6d4" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg)" stroke="#06b6d4" stroke-width="2" stroke-opacity="0.3"/>
+  <!-- Outer glow ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="url(#glow)" stroke-width="1.5"/>
+  <!-- Prism / Shield shape (the proxy) -->
+  <path d="M256 96 L384 224 L336 416 L176 416 L128 224 Z" fill="url(#bg)" stroke="url(#cyan)" stroke-width="3" filter="url(#shadow)"/>
+  <!-- Data streams through prism -->
+  <!-- Left incoming beam -->
+  <line x1="64" y1="200" x2="192" y2="256" stroke="#06b6d4" stroke-width="2" stroke-opacity="0.7"/>
+  <line x1="64" y1="280" x2="192" y2="300" stroke="#06b6d4" stroke-width="1.5" stroke-opacity="0.5"/>
+  <line x1="80" y1="340" x2="188" y2="340" stroke="#06b6d4" stroke-width="1" stroke-opacity="0.3"/>
+  <!-- Right outgoing beam (structured) -->
+  <line x1="320" y1="256" x2="448" y2="200" stroke="#22c55e" stroke-width="2.5" stroke-opacity="0.8"/>
+  <line x1="320" y1="300" x2="448" y2="280" stroke="#22c55e" stroke-width="2" stroke-opacity="0.6"/>
+  <line x1="324" y1="340" x2="432" y2="340" stroke="#22c55e" stroke-width="1.5" stroke-opacity="0.4"/>
+  <!-- Center eye / core -->
+  <circle cx="256" cy="272" r="36" fill="none" stroke="#06b6d4" stroke-width="2.5"/>
+  <circle cx="256" cy="272" r="16" fill="#06b6d4"/>
+  <circle cx="256" cy="272" r="8" fill="#0f172a"/>
+  <!-- Top vertex accent -->
+  <circle cx="256" cy="96" r="6" fill="#06b6d4" filter="url(#shadow)"/>
+  <!-- Bottom nodes -->
+  <circle cx="176" cy="416" r="5" fill="#06b6d4" opacity="0.7"/>
+  <circle cx="336" cy="416" r="5" fill="#06b6d4" opacity="0.7"/>
+  <!-- Network dots -->
+  <circle cx="64" cy="200" r="4" fill="#f59e0b"/>
+  <circle cx="64" cy="280" r="3" fill="#f59e0b" opacity="0.7"/>
+  <circle cx="448" cy="200" r="4" fill="#22c55e"/>
+  <circle cx="448" cy="280" r="3" fill="#22c55e" opacity="0.7"/>
+</svg>
