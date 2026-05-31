@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/icon.svg" width="96" alt="Proxygen Logo">
+  <img src="dashboard/public/icon.svg" width="96" alt="Proxygen Logo">
   <h1>Proxygen 🧪</h1>
   <p><em>Autonomous agent that scrapes geo-restricted data via global proxies, structures it with AI, and sells clean feeds — all settled via x402 micropayments on Solana.</em></p>
   <img src="docs/readme-hero.png" alt="Proxygen" width="100%">

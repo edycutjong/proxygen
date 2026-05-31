@@ -156,3 +156,77 @@ html, body {
 .badge-green { background: var(--color-accent-green-dim); color: var(--color-accent-green); }
 .badge-red { background: var(--color-accent-red-dim); color: var(--color-accent-red); }
 .badge-amber { background: var(--color-accent-amber-dim); color: var(--color-accent-amber); }
+
+/* ─── Simulator Node Graph ─────────────────────────────────── */
+.node-box {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  color: var(--color-text-secondary);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+}
+
+.node-box.active {
+  border-color: var(--color-accent-cyan);
+  color: var(--color-text-primary);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+  background: rgba(6, 182, 212, 0.05);
+}
+
+.node-box.active.llm {
+  border-color: var(--color-accent-violet);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.25);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.node-box.active.feed {
+  border-color: var(--color-accent-green);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.node-box.active.con {
+  border-color: var(--color-accent-green);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.node-box.offline {
+  border-color: var(--color-accent-red);
+  color: var(--color-accent-red);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.x402-tag {
+  position: absolute;
+  font-size: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--color-text-muted);
+  padding: 2px 5px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.x402-tag.active {
+  opacity: 1;
+  transform: translateY(0);
+  border-color: var(--color-accent-green);
+  color: var(--color-accent-green);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.2);
+}
+
