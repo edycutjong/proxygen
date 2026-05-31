@@ -18,7 +18,7 @@
     "@acedatacloud/sdk": "latest",
     "@acedatacloud/x402-client": "latest",
     "@coral-xyz/anchor": "^0.30.0",
-    "@fastify/cors": "^10.0.0",
+    "@fastify/cors": "^11.2.0",
     "@oobe-protocol-labs/synapse-client-sdk": "latest",
     "@oobe-protocol-labs/synapse-sap-sdk": "^0.13.0",
     "@solana/web3.js": "^1.95.0",
