@@ -28,7 +28,8 @@
 ## 📸 See it in Action
 
 <div align="center">
-  <img src="dashboard/public/og-image.png" alt="Proxygen Dashboard" width="100%">
+  <img width="800" height="500" alt="landing-proxygen-1" src="docs/landing-proxygen-1.gif" />
+  <img width="800" height="500" alt="dashboard-proxy-1" src="docs/dashboard-proxy-1.gif" />
 </div>
 
 > **3-second intelligence delivery.** Query → Proxy activates (Seoul 🇰🇷) → AI extracts structured data → x402 payment settles on Solana → Clean JSON delivered.
