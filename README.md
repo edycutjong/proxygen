@@ -8,7 +8,7 @@
 
   [![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-06b6d4?style=for-the-badge)](https://proxygen.edycu.dev)
   [![Pitch Video](https://img.shields.io/badge/🎬_Pitch-Video-ef4444?style=for-the-badge)](https://youtu.be/dQw4w9WgXcQ)
-  [![Interactive Pitch Deck](https://img.shields.io/badge/🖥️_Interactive_Pitch_Deck-22c55e?style=for-the-badge)](https://proxygen.edycu.dev/pitch-deck.html)
+  [![Pitch Deck](https://img.shields.io/badge/🖥️_Interactive_Pitch_Deck-22c55e?style=for-the-badge)](https://proxygen.edycu.dev/pitch-deck.html)
   [![Built for OOBE × Ace Data Cloud](https://img.shields.io/badge/Superteam-OOBE_×_Ace_Data_Cloud-8b5cf6?style=for-the-badge)](https://superteam.fun/earn/listing/autonomous-agent-bounty-oobe-ace-data-cloud)
 
   <br/>
@@ -228,7 +228,6 @@ proxygen/
 │   │   ├── ci.yml            # Dual-workspace CI
 │   │   └── codeql.yml        # Security analysis
 │   └── dependabot.yml        # Dependency updates
-├── .env.example
 ├── .gitignore
 ├── LICENSE                   # MIT
 └── README.md                 # You are here
