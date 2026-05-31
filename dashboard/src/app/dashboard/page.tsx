@@ -181,7 +181,7 @@ function StatsBar({ stats }: { stats: AgentStats }) {
 // ─── Feed Table ──────────────────────────────────────────────
 function FeedTable({ items }: { items: ProxygenFeedItem[] }) {
   return (
-    <div className="glass-card p-4 overflow-hidden">
+    <div id="live-feeds-panel" className="glass-card p-4 overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan)">
           LIVE FEEDS
@@ -250,7 +250,7 @@ function FeedTable({ items }: { items: ProxygenFeedItem[] }) {
 // ─── Decision Log ────────────────────────────────────────────
 function DecisionLogPanel({ entries }: { entries: DecisionLogEntry[] }) {
   return (
-    <div className="glass-card p-4 overflow-hidden">
+    <div id="decision-log-panel" className="glass-card p-4 overflow-hidden">
       <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan) mb-3">
         AGENT DECISION LOG
       </h2>
@@ -284,7 +284,7 @@ function DecisionLogPanel({ entries }: { entries: DecisionLogEntry[] }) {
 // ─── Source Health ────────────────────────────────────────────
 function SourceHealthPanel({ sources }: { sources: SourceHealth[] }) {
   return (
-    <div className="glass-card p-4">
+    <div id="source-health-panel" className="glass-card p-4">
       <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan) mb-3">
         SOURCE HEALTH
       </h2>
@@ -328,7 +328,7 @@ function PnLTracker({ payments, stats }: { payments: PaymentRecord[]; stats: Age
   const maxVal = Math.max(outflow, inflow, 0.001);
 
   return (
-    <div className="glass-card p-4">
+    <div id="economics-panel" className="glass-card p-4">
       <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan) mb-3">
         ECONOMICS
       </h2>

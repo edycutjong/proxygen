@@ -109,7 +109,7 @@ export default function LandingPage() {
         addLog("PROXY", "Routing target fetch request through Ace Data Cloud HTTP Proxy (Seoul, KR)...", "text-cyan-400");
         addLog("SCRAPE", "Accessing restricted Upbit BTC/KRW API orderbooks behind geo-IP gate...", "text-cyan-400");
         
-        await animateDot(90, 92, 145, 122, "#06B6D4", 1200);
+        await animateDot(90, 32, 145, 122, "#06B6D4", 1200);
         await animateDot(240, 122, 260, 122, "#06B6D4", 800);
         
         runAIExtract();
@@ -182,7 +182,7 @@ export default function LandingPage() {
     addLog("SCRAPE", "Triggering Ace Data Global HTTP Proxy (Korea)...", "text-cyan-400");
 
     setTimeout(async () => {
-      await animateDot(90, 92, 145, 122, "#06B6D4", 1000);
+      await animateDot(90, 32, 145, 122, "#06B6D4", 1000);
       await animateDot(240, 122, 260, 122, "#06B6D4", 750);
       setSimState("ai_extract");
       addLog("AI", "Processing orderbook fields via GPT-4o parser...", "text-violet-400");
@@ -338,7 +338,7 @@ export default function LandingPage() {
                 </svg>
                 View Pitch Deck
               </Link>
-              <Link href="https://youtu.be/dQw4w9WgXcQ" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-(--color-border-default) rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
+              <Link href="https://youtu.be/ktl4GxVcBoI" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-(--color-border-default) rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
                 <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -395,14 +395,14 @@ export default function LandingPage() {
               <div className="relative w-full h-[230px] bg-slate-950/40 rounded-lg overflow-hidden border border-slate-800/50 mb-4">
                 <svg className="absolute inset-0 w-full h-full" viewBox="0 0 580 250">
                   <line x1="90" y1="32" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="90" y1="92" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="90" y1="152" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="90" y1="212" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="92" x2="145" y2="122" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="152" x2="145" y2="122" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="212" x2="145" y2="122" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="3 3" />
                   
                   <line x1="240" y1="122" x2="260" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
                   <line x1="308" y1="110" x2="308" y2="44" stroke={simState === "ai_extract" ? "var(--color-accent-violet)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
                   
-                  <line x1="355" y1="122" x2="380" y2="122" stroke={simState === "x402_settle" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
+                  <line x1="355" y1="122" x2="380" y2="122" stroke={["x402_settle", "consume"].includes(simState) ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
                   
                   <line x1="475" y1="122" x2="500" y2="52" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
                   <line x1="475" y1="122" x2="500" y2="122" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" />
@@ -415,9 +415,9 @@ export default function LandingPage() {
 
                 {/* Nodes overlays */}
                 <div className={`node-box src n-src1 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "20px", width: "80px" }}>🇰🇷 Upbit</div>
-                <div className={`node-box src n-src2 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "80px", width: "80px" }}>🇨🇳 Weibo</div>
-                <div className={`node-box src n-src3 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "140px", width: "80px" }}>🇺🇸 Binance</div>
-                <div className={`node-box src n-src4 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "200px", width: "80px" }}>🇪🇺 Regs</div>
+                <div className="node-box src n-src2" style={{ left: "10px", top: "80px", width: "80px" }}>🇨🇳 Weibo</div>
+                <div className="node-box src n-src3" style={{ left: "10px", top: "140px", width: "80px" }}>🇺🇸 Binance</div>
+                <div className="node-box src n-src4" style={{ left: "10px", top: "200px", width: "80px" }}>🇪🇺 Regs</div>
 
                 <div className={`node-box proxy n-proxy ${simState === "scrape" ? "active" : ""} ${simState === "outage" ? "offline animate-pulse" : ""}`} style={{ left: "145px", top: "110px", width: "95px" }}>
                   {simState === "outage" ? "❌ Outage" : "🌐 Ace Proxy"}
