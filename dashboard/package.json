@@ -37,7 +37,7 @@
     "jest-environment-jsdom": "^30.4.1",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.11",
-    "typescript": "^5"
+    "typescript": "^6"
   },
   "overrides": {
     "cookie": "^0.7.0",
