@@ -10,6 +10,7 @@
   [![Pitch Video](https://img.shields.io/badge/🎬_Pitch-Video-ef4444?style=for-the-badge)](https://youtu.be/ktl4GxVcBoI)
   [![Pitch Deck](https://img.shields.io/badge/🖥️_Interactive_Pitch_Deck-22c55e?style=for-the-badge)](https://proxygen.edycu.dev/pitch-deck.html)
   [![Built for OOBE × Ace Data Cloud](https://img.shields.io/badge/Superteam-OOBE_×_Ace_Data_Cloud-8b5cf6?style=for-the-badge)](https://superteam.fun/earn/listing/autonomous-agent-bounty-oobe-ace-data-cloud)
+  [![𝕏 Announcement](https://img.shields.io/badge/𝕏_Announcement-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/edycutjong/status/2061016507971490185?s=20)
 
   <br/>
 
