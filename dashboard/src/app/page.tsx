@@ -79,7 +79,7 @@ export default function LandingPage() {
   // Spawn floating USDC tag
   const spawnFloat = (nodeId: "nd-con1" | "nd-con2") => {
     const id = floatIdCounter.current++;
-    const coords = nodeId === "nd-con1" ? { left: "470px", top: "40px" } : { left: "470px", top: "110px" };
+    const coords = nodeId === "nd-con1" ? { left: "500px", top: "40px" } : { left: "500px", top: "110px" };
     setFloats(prev => [...(prev || []), { id, text: "+0.01 USDC", ...coords }]);
     setTimeout(() => {
       setFloats(prev => (prev || []).filter(f => f.id !== id));
@@ -109,8 +109,8 @@ export default function LandingPage() {
         addLog("PROXY", "Routing target fetch request through Ace Data Cloud HTTP Proxy (Seoul, KR)...", "text-cyan-400");
         addLog("SCRAPE", "Accessing restricted Upbit BTC/KRW API orderbooks behind geo-IP gate...", "text-cyan-400");
         
-        await animateDot(90, 60, 145, 120, "#06B6D4", 1200);
-        await animateDot(200, 120, 260, 120, "#06B6D4", 800);
+        await animateDot(90, 92, 145, 122, "#06B6D4", 1200);
+        await animateDot(240, 122, 260, 122, "#06B6D4", 800);
         
         runAIExtract();
       }, 1000);
@@ -122,14 +122,14 @@ export default function LandingPage() {
       addLog("AI", "Unstructured table sent to Ace Data GPT-4o parser for model serialization...", "text-violet-400");
       
       stepTimer = setTimeout(async () => {
-        await animateDot(295, 110, 295, 50, "#8B5CF6", 800);
+        await animateDot(308, 110, 308, 44, "#8B5CF6", 800);
         addLog("AI", "Extraction finished successfully (confidence index: 99.78%). Model: gpt-4o-mini", "text-violet-400");
         addLog("AI", "Output structured parameters verified: spot_price=₩91,240,000, depth_bids_10m=4.51M", "text-violet-400");
         
         setUpbitPrice(68300 + Math.floor(Math.random() * 300));
         setUsdtPrice(66100 + Math.floor(Math.random() * 200));
 
-        await animateDot(295, 50, 295, 110, "#8B5CF6", 800);
+        await animateDot(308, 44, 308, 110, "#8B5CF6", 800);
         runX402Settle();
       }, 1200);
     };
@@ -140,7 +140,7 @@ export default function LandingPage() {
       addLog("x402", "Initiating x402 settlement out-flow to Ace Data wallet...", "text-amber-500");
       
       stepTimer = setTimeout(async () => {
-        await animateDot(330, 120, 380, 120, "#22C55E", 800);
+        await animateDot(355, 122, 380, 122, "#22C55E", 800);
         setNetSettled(prev => prev - 0.07);
         addLog("x402", "Settlement tx successful. Payout hash: 5B9w...p2a1 on Solana Sepolia", "text-amber-500");
         addLog("FEED", "Publishing structured feed parameter to SAP: kimchi_premium = +3.42%", "text-emerald-500");
@@ -154,8 +154,8 @@ export default function LandingPage() {
       addLog("x402", "Verifying consumer in-flow payment: 0.01 USDC received", "text-amber-500");
       
       stepTimer = setTimeout(async () => {
-        animateDot(435, 120, 470, 50, "#22C55E", 900).then(() => spawnFloat("nd-con1"));
-        animateDot(435, 120, 470, 120, "#22C55E", 900).then(() => spawnFloat("nd-con2"));
+        animateDot(475, 122, 500, 52, "#22C55E", 900).then(() => spawnFloat("nd-con1"));
+        animateDot(475, 122, 500, 122, "#22C55E", 900).then(() => spawnFloat("nd-con2"));
         
         setTimeout(() => {
           setNetSettled(prev => prev + 0.02);
@@ -182,18 +182,18 @@ export default function LandingPage() {
     addLog("SCRAPE", "Triggering Ace Data Global HTTP Proxy (Korea)...", "text-cyan-400");
 
     setTimeout(async () => {
-      await animateDot(90, 60, 145, 120, "#06B6D4", 1000);
-      await animateDot(200, 120, 260, 120, "#06B6D4", 750);
+      await animateDot(90, 92, 145, 122, "#06B6D4", 1000);
+      await animateDot(240, 122, 260, 122, "#06B6D4", 750);
       setSimState("ai_extract");
       addLog("AI", "Processing orderbook fields via GPT-4o parser...", "text-violet-400");
       
       setTimeout(async () => {
-        await animateDot(295, 110, 295, 50, "#8B5CF6", 800);
+        await animateDot(308, 110, 308, 44, "#8B5CF6", 800);
         setNetSettled(prev => prev - 0.07 + 0.01);
         addLog("x402", "Settled 0.07 USDC spend and collected 0.01 USDC query fees on Solana.", "text-amber-500");
         addLog("SYSTEM", "[MANUAL] Scrape cycle complete. Returning to autopilot monitoring in 3s...", "text-slate-400");
         
-        await animateDot(295, 50, 295, 110, "#8B5CF6", 800);
+        await animateDot(308, 44, 308, 110, "#8B5CF6", 800);
         
         setTimeout(() => {
           setIsAutoplay(true);
@@ -394,19 +394,19 @@ export default function LandingPage() {
               {/* Live SVG Graph & Node Boxes */}
               <div className="relative w-full h-[230px] bg-slate-950/40 rounded-lg overflow-hidden border border-slate-800/50 mb-4">
                 <svg className="absolute inset-0 w-full h-full" viewBox="0 0 580 250">
-                  <line x1="90" y1="30" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="90" y1="90" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="90" y1="150" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="90" y1="210" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="32" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="92" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="152" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="212" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
                   
-                  <line x1="200" y1="120" x2="260" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
-                  <line x1="295" y1="110" x2="295" y2="50" stroke={simState === "ai_extract" ? "var(--color-accent-violet)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="240" y1="122" x2="260" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
+                  <line x1="308" y1="110" x2="308" y2="44" stroke={simState === "ai_extract" ? "var(--color-accent-violet)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
                   
-                  <line x1="330" y1="120" x2="380" y2="120" stroke={simState === "x402_settle" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
+                  <line x1="355" y1="122" x2="380" y2="122" stroke={simState === "x402_settle" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
                   
-                  <line x1="435" y1="120" x2="470" y2="50" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="435" y1="120" x2="470" y2="120" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" />
-                  <line x1="435" y1="120" x2="470" y2="190" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="475" y1="122" x2="500" y2="52" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="475" y1="122" x2="500" y2="122" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" />
+                  <line x1="475" y1="122" x2="500" y2="192" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
 
                   {flowDot && (
                     <circle cx={flowDot.cx} cy={flowDot.cy} r="3" fill={flowDot.color} opacity={flowDot.opacity} style={{ filter: `drop-shadow(0 0 4px ${flowDot.color})` }} />
@@ -414,27 +414,27 @@ export default function LandingPage() {
                 </svg>
 
                 {/* Nodes overlays */}
-                <div className={`node-box src n-src1 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "20px" }}>🇰🇷 Upbit</div>
-                <div className={`node-box src n-src2 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "80px" }}>🇨🇳 Weibo</div>
-                <div className={`node-box src n-src3 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "140px" }}>🇺🇸 Binance</div>
-                <div className={`node-box src n-src4 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "200px" }}>🇪🇺 Regs</div>
+                <div className={`node-box src n-src1 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "20px", width: "80px" }}>🇰🇷 Upbit</div>
+                <div className={`node-box src n-src2 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "80px", width: "80px" }}>🇨🇳 Weibo</div>
+                <div className={`node-box src n-src3 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "140px", width: "80px" }}>🇺🇸 Binance</div>
+                <div className={`node-box src n-src4 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "200px", width: "80px" }}>🇪🇺 Regs</div>
 
-                <div className={`node-box proxy n-proxy ${simState === "scrape" ? "active" : ""} ${simState === "outage" ? "offline animate-pulse" : ""}`} style={{ left: "145px", top: "110px" }}>
+                <div className={`node-box proxy n-proxy ${simState === "scrape" ? "active" : ""} ${simState === "outage" ? "offline animate-pulse" : ""}`} style={{ left: "145px", top: "110px", width: "95px" }}>
                   {simState === "outage" ? "❌ Outage" : "🌐 Ace Proxy"}
                 </div>
                 
-                <div className={`node-box core n-core ${["scrape", "ai_extract", "x402_settle", "consume"].includes(simState) ? "active" : ""}`} style={{ left: "260px", top: "110px" }}>🧠 PROXYGEN</div>
-                <div className={`node-box llm n-llm ${simState === "ai_extract" ? "active" : ""}`} style={{ left: "260px", top: "20px" }}>🤖 GPT-4o</div>
-                <div className={`node-box feed n-feed ${["x402_settle", "consume"].includes(simState) ? "active" : ""}`} style={{ left: "380px", top: "110px" }}>📡 x402 Feed</div>
+                <div className={`node-box core n-core ${["scrape", "ai_extract", "x402_settle", "consume"].includes(simState) ? "active" : ""}`} style={{ left: "260px", top: "110px", width: "95px" }}>🧠 PROXYGEN</div>
+                <div className={`node-box llm n-llm ${simState === "ai_extract" ? "active" : ""}`} style={{ left: "260px", top: "20px", width: "95px" }}>🤖 GPT-4o</div>
+                <div className={`node-box feed n-feed ${["x402_settle", "consume"].includes(simState) ? "active" : ""}`} style={{ left: "380px", top: "110px", width: "95px" }}>📡 x402 Feed</div>
 
-                <div className={`node-box con n-con1 ${simState === "consume" ? "active" : ""}`} style={{ left: "470px", top: "40px" }}>📊 Traders</div>
-                <div className={`node-box con n-con2 ${simState === "consume" ? "active" : ""}`} style={{ left: "470px", top: "110px" }}>🤖 Agents</div>
-                <div className={`node-box con n-con3 ${simState === "consume" ? "active" : ""}`} style={{ left: "470px", top: "180px" }}>🏛️ Protocols</div>
+                <div className={`node-box con n-con1 ${simState === "consume" ? "active" : ""}`} style={{ left: "500px", top: "40px", width: "70px" }}>📊 Traders</div>
+                <div className={`node-box con n-con2 ${simState === "consume" ? "active" : ""}`} style={{ left: "500px", top: "110px", width: "70px" }}>🤖 Agents</div>
+                <div className={`node-box con n-con3 ${simState === "consume" ? "active" : ""}`} style={{ left: "500px", top: "180px", width: "70px" }}>🏛️ Protocols</div>
 
                 {/* x402 labels */}
                 <div className={`x402-tag t-proxy ${simState === "scrape" ? "active" : ""}`} style={{ left: "108px", top: "98px" }}>x402 $0.05</div>
-                <div className={`x402-tag t-llm ${simState === "ai_extract" ? "active" : ""}`} style={{ left: "232px", top: "78px" }}>x402 $0.02</div>
-                <div className={`x402-tag t-feed ${simState === "x402_settle" ? "active" : ""}`} style={{ left: "338px", top: "98px" }}>x402 $0.01</div>
+                <div className={`x402-tag t-llm ${simState === "ai_extract" ? "active" : ""}`} style={{ left: "315px", top: "78px" }}>x402 $0.02</div>
+                <div className={`x402-tag t-feed ${simState === "x402_settle" ? "active" : ""}`} style={{ left: "342px", top: "135px" }}>x402 $0.01</div>
 
                 {/* Floats list */}
                 {floats && floats.map(f => (
