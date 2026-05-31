@@ -26,12 +26,13 @@ const RECORDING_DIR = path.resolve(
 
 const VIEWPORT = { width: 1920, height: 1080 };
 
+test.use({
+  viewport: VIEWPORT,
+  video: { mode: "on", size: VIEWPORT },
+  launchOptions: { slowMo: 300 },
+});
+
 test.describe("Proxygen — Demo Capture", () => {
-  test.use({
-    viewport: VIEWPORT,
-    video: { mode: "on", size: VIEWPORT },
-    launchOptions: { slowMo: 300 },
-  });
 
   test("01 — Dashboard overview (viewport)", async ({ page }) => {
     await page.goto("/");

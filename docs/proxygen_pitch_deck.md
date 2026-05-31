@@ -120,7 +120,7 @@
 
 ## Slide 10: Conclusion & Call to Action
 * **Title**: Your AI Scrapes Global. Proxygen Settles.
-* **Visual**: [Live Demo](https://proxygen-dashboard-production.up.railway.app) | [Pitch Video](https://youtu.be/dQw4w9WgXcQ)
+* **Visual**: [Live Demo](https://proxygen.edycu.dev) | [Pitch Video](https://youtu.be/dQw4w9WgXcQ)
 * **Ask**: Support us in the DoraHacks / Superteam listing!
 * **Speaker Notes**:
   In conclusion, Proxygen represents the future of autonomous agent data acquisition. No geo-restrictions, no payment friction, and zero manual work. Try the live dashboard, watch the demo video, and help us fund this transition. Thank you!

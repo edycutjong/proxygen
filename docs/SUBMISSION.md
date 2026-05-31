@@ -92,8 +92,8 @@ Show P&L tracker: spent $X, earned $Y.
 
 The first agent that uses @AceDataCloud's proxy APIs to scrape geo-restricted data, structures it with AI, and sells feeds via x402 micropayments.
 
-🔗 Live App: https://proxygen-dashboard-production.up.railway.app
-🔗 API Endpoint: https://proxygen-agent-production.up.railway.app
+🔗 Live App: https://proxygen.edycu.dev
+🔗 API Endpoint: https://api.proxygen.edycu.dev
 🔗 Demo: https://youtu.be/dQw4w9WgXcQ
 🔗 GitHub: https://github.com/edycutjong/proxygen
 🏷️ Category: A + B

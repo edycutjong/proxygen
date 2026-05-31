@@ -6,7 +6,7 @@
 
   <br/>
 
-  [![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-06b6d4?style=for-the-badge)](https://proxygen-dashboard-production.up.railway.app)
+  [![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-06b6d4?style=for-the-badge)](https://proxygen.edycu.dev)
   [![Pitch Video](https://img.shields.io/badge/🎬_Pitch-Video-ef4444?style=for-the-badge)](https://youtu.be/dQw4w9WgXcQ)
   [![Pitch Deck Outline](https://img.shields.io/badge/📋_Pitch_Deck-Outline-38b2ac?style=for-the-badge)](docs/proxygen_pitch_deck.md)
   [![Interactive Slides](https://img.shields.io/badge/🖥️_Interactive-Slides-22c55e?style=for-the-badge)](docs/proxygen_pitch_deck.html)

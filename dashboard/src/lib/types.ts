@@ -73,4 +73,7 @@ export interface DashboardState {
 }
 
 /** Agent API base URL */
-export const AGENT_API_URL = process.env.NEXT_PUBLIC_AGENT_API_URL ?? "http://localhost:3001";
+export const AGENT_API_URL = process.env.NEXT_PUBLIC_AGENT_API_URL ?? 
+  (typeof window !== "undefined" && window.location.hostname !== "localhost" 
+    ? "https://api.proxygen.edycu.dev" 
+    : "http://localhost:3001");

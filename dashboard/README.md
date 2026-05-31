@@ -10,7 +10,7 @@ Create a `.env.local` file in this directory based on `.env.example`:
 # ── Agent API ────────────────────────────────────────────────
 # URL of the Proxygen agent API
 # For local dev: http://localhost:3001
-# For production: https://proxygen-agent-production.up.railway.app
+# For production: https://api.proxygen.edycu.dev
 NEXT_PUBLIC_AGENT_API_URL=http://localhost:3001
 ```
 
