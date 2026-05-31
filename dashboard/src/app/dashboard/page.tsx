@@ -97,16 +97,75 @@ function StatsBar({ stats }: { stats: AgentStats }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
       {[
-        { label: "Scrapes", value: stats.total_scrapes.toString(), icon: "🔄" },
-        { label: "Extractions", value: stats.total_extractions.toString(), icon: "🧠" },
-        { label: "Feed Queries", value: stats.total_feed_queries.toString(), icon: "📊" },
-        { label: "Cached Items", value: stats.feed_items_cached.toString(), icon: "💾" },
-        { label: "Outflow", value: `$${stats.total_x402_outflow_usdc.toFixed(3)}`, icon: "📤", color: "text-(--color-accent-red)" },
-        { label: "Inflow", value: `$${stats.total_x402_inflow_usdc.toFixed(3)}`, icon: "📥", color: "text-(--color-accent-green)" },
-        { label: "Net P&L", value: net >= 0 ? `+$${net.toFixed(3)}` : `-$${Math.abs(net).toFixed(3)}`, icon: "💹", color: netColor },
+        { 
+          label: "Scrapes", 
+          value: stats.total_scrapes.toString(), 
+          icon: (
+            <svg className="w-5 h-5 text-(--color-accent-cyan)" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" />
+            </svg>
+          )
+        },
+        { 
+          label: "Extractions", 
+          value: stats.total_extractions.toString(), 
+          icon: (
+            <svg className="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          )
+        },
+        { 
+          label: "Feed Queries", 
+          value: stats.total_feed_queries.toString(), 
+          icon: (
+            <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+            </svg>
+          )
+        },
+        { 
+          label: "Cached Items", 
+          value: stats.feed_items_cached.toString(), 
+          icon: (
+            <svg className="w-5 h-5 text-(--color-accent-cyan)" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+          )
+        },
+        { 
+          label: "Outflow", 
+          value: `$${stats.total_x402_outflow_usdc.toFixed(3)}`, 
+          icon: (
+            <svg className="w-5 h-5 text-(--color-accent-red)" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 8l-8 8m8-8H9m7 0v7" />
+            </svg>
+          ),
+          color: "text-(--color-accent-red)" 
+        },
+        { 
+          label: "Inflow", 
+          value: `$${stats.total_x402_inflow_usdc.toFixed(3)}`, 
+          icon: (
+            <svg className="w-5 h-5 text-(--color-accent-green)" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 16l8-8m-8 8h7m-7 0V9" />
+            </svg>
+          ),
+          color: "text-(--color-accent-green)" 
+        },
+        { 
+          label: "Net P&L", 
+          value: net >= 0 ? `+$${net.toFixed(3)}` : `-$${Math.abs(net).toFixed(3)}`, 
+          icon: (
+            <svg className={`w-5 h-5 ${netColor}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          ),
+          color: netColor 
+        },
       ].map((stat) => (
-        <div key={stat.label} className="glass-card p-3 flex flex-col items-center text-center">
-          <span className="text-lg mb-1">{stat.icon}</span>
+        <div key={stat.label} className="glass-card p-3 flex flex-col items-center justify-center text-center">
+          <div className="flex items-center justify-center mb-1 h-6">{stat.icon}</div>
           <span className={`font-mono-data text-sm font-semibold ${stat.color ?? "text-(--color-text-primary)"}`}>
             {stat.value}
           </span>
@@ -315,8 +374,16 @@ function PnLTracker({ payments, stats }: { payments: PaymentRecord[]; stats: Age
         {payments.slice(0, 10).map((p) => (
           <div key={p.id} className="flex items-center justify-between text-[0.65rem]">
             <div className="flex items-center gap-2">
-              <span className={p.direction === "outflow" ? "text-(--color-accent-red)" : "text-(--color-accent-green)"}>
-                {p.direction === "outflow" ? "▼" : "▲"}
+              <span className="flex items-center justify-center w-3 h-3">
+                {p.direction === "outflow" ? (
+                  <svg className="w-2.5 h-2.5 text-(--color-accent-red)" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                ) : (
+                  <svg className="w-2.5 h-2.5 text-(--color-accent-green)" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                  </svg>
+                )}
               </span>
               <span className="text-(--color-text-secondary)">{p.service}</span>
             </div>
@@ -348,7 +415,10 @@ function KimchiPremiumBanner({ items }: { items: ProxygenFeedItem[] }) {
   return (
     <div className={`glass-card p-3 flex items-center justify-between animate-pulse-glow`}>
       <div className="flex items-center gap-3">
-        <span className="text-2xl">🔥</span>
+        <svg className="w-6 h-6 text-amber-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.077 17.657 18.657z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12.343 14.343S13 15 14 15c0-1 .5-2.5 2-3.5C15 12 13 13 12.343 14.343z" />
+        </svg>
         <div>
           <div className="font-orbitron text-xs font-bold tracking-wider text-(--color-accent-cyan)">
             KIMCHI PREMIUM SIGNAL
