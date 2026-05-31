@@ -1,8 +1,9 @@
 import { jest } from "@jest/globals";
 import React from "react";
 import { render, screen, act } from "@testing-library/react";
-import DashboardPage from "../app/page";
+import DashboardPage from "../app/dashboard/page";
 import type { DashboardState } from "@/lib/types";
+
 
 // Helper to flush microtasks / promises without using any mocked timer APIs
 const flushPromises = async () => {

@@ -5,6 +5,7 @@ export default {
     "^@/(.*)$": "<rootDir>/src/$1",
     // Mock CSS imports so Jest doesn't fail on them
     "\\.css$": "<rootDir>/src/__tests__/__mocks__/styleMock.js",
+    "^next/image$": "<rootDir>/src/__tests__/__mocks__/nextImageMock.tsx",
   },
   transform: {
     "^.+\\.tsx?$": [

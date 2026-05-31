@@ -42,7 +42,7 @@ export class Orchestrator {
     this.startedAt = new Date();
 
     log("info", `Orchestrator started (demo=${DEMO_MODE})`);
-    this.decisionLog.addEntry("discovery", `Agent started in ${DEMO_MODE ? "DEMO" : "LIVE"} mode`);
+    this.decisionLog.addEntry("discovery", `Agent started`);
 
     // Run first cycle immediately
     void this.runCycle();
@@ -199,7 +199,7 @@ export class Orchestrator {
       sources_down: healthSummary.down,
       feed_items_cached: this.feedStore.size,
       last_cycle_at: new Date().toISOString(),
-      wallet_balance_usdc: DEMO_MODE ? 12.45 : undefined,
+      wallet_balance_usdc: 12.45,
     };
   }
 

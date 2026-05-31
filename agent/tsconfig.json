@@ -6,6 +6,7 @@
     "lib": ["ES2022"],
     "outDir": "./dist",
     "rootDir": "./src",
+    "isolatedModules": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": false,

@@ -1,472 +1,682 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { DashboardState, ProxygenFeedItem, DecisionLogEntry, SourceHealth, PaymentRecord, AgentStats } from "@/lib/types";
-import { AGENT_API_URL } from "@/lib/types";
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
-// ─── Region flag map ─────────────────────────────────────────
-const REGION_FLAGS: Record<string, string> = { KR: "🇰🇷", CN: "🇨🇳", US: "🇺🇸", EU: "🇪🇺", JP: "🇯🇵", SG: "🇸🇬" };
 
-// ─── Formatters ──────────────────────────────────────────────
-function formatPrice(price: number | undefined, region: string): string {
-  if (!price) return "—";
-  if (region === "KR") return `₩${(price / 1_000_000).toFixed(1)}M`;
-  if (region === "CN") return `¥${price.toLocaleString()}`;
-  if (region === "JP") return `¥${(price / 10_000).toFixed(1)}万`;
-  return `$${price.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+interface LogLine {
+  time: string;
+  tag: string;
+  className: string;
+  message: string;
 }
 
-function formatUSDC(amount: number): string {
-  return `$${amount.toFixed(4)}`;
-}
+export default function LandingPage() {
+  // Autoplay and Simulation state
+  const [cyclesCount, setCyclesCount] = useState(724);
+  const [netSettled, setNetSettled] = useState(728.54);
+  const [isAutoplay, setIsAutoplay] = useState(true);
+  const [agentState, setAgentState] = useState("AUTOPILOT");
+  const [simState, setSimState] = useState<"idle" | "scrape" | "ai_extract" | "x402_settle" | "consume" | "outage">("idle");
+  
+  // Console logs
+  const [logs, setLogs] = useState<LogLine[]>([
+    { time: "14:21:40", tag: "SYSTEM", className: "text-slate-400", message: "Proxygen Runtime v2.0.0 initializing on node-solana-mainnet..." },
+    { time: "14:21:41", tag: "SAP", className: "text-slate-400", message: "Autodiscovered SAP Tool Registry. 3 tools synced: proxygen-scrape, proxygen-analyze, proxygen-route." }
+  ]);
+  const consoleEndRef = useRef<HTMLDivElement>(null);
+  
+  // Custom Flow Dot positions
+  const [flowDot, setFlowDot] = useState<{ cx: number; cy: number; color: string; opacity: number } | null>(null);
+  
+  // Prices states for Kimchi Premium widget
+  const [upbitPrice, setUpbitPrice] = useState(68450);
+  const [usdtPrice, setUsdtPrice] = useState(66180);
+  
+  // Accordion active FAQ keys
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
-}
+  // Floating USDC text list
+  const [floats, setFloats] = useState<{ id: number; text: string; left: string; top: string }[] | null>(null);
+  const floatIdCounter = useRef(0);
 
-function formatUptime(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  return `${h}h ${m}m`;
-}
-
-function confidenceColor(c: number): string {
-  if (c >= 0.9) return "text-[var(--color-accent-green)]";
-  if (c >= 0.7) return "text-[var(--color-accent-amber)]";
-  return "text-[var(--color-accent-red)]";
-}
-
-function typeColor(type: DecisionLogEntry["type"]): string {
-  switch (type) {
-    case "discovery": return "badge-cyan";
-    case "scrape": return "badge-cyan";
-    case "extract": return "badge-green";
-    case "payment": return "badge-amber";
-    case "failover": return "badge-red";
-    case "publish": return "badge-green";
-    case "error": return "badge-red";
-    default: return "badge-cyan";
-  }
-}
-
-// ─── Header Component ────────────────────────────────────────
-function Header({ stats }: { stats: AgentStats | null }) {
-  return (
-    <header className="glass-card px-6 py-3 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 flex items-center justify-center">
-            <img src="/icon.svg" alt="Proxygen Logo" className="w-full h-full" />
-          </div>
-          <h1 className="font-orbitron text-lg font-bold tracking-wider text-[var(--color-text-primary)]">
-            PROXYGEN
-          </h1>
-        </div>
-        <span className="text-xs text-[var(--color-text-muted)] font-mono-data">v0.1.0</span>
-      </div>
-
-      <div className="flex items-center gap-6">
-        {stats && (
-          <>
-            <div className="flex items-center gap-2">
-              <span className={`status-dot ${stats.is_active ? "healthy" : "down"}`} />
-              <span className="text-xs font-semibold tracking-wider text-[var(--color-text-secondary)]">
-                {stats.is_active ? "ACTIVE" : "OFFLINE"}
-              </span>
-            </div>
-            <div className="text-xs text-[var(--color-text-muted)]">
-              ↑ {formatUptime(stats.uptime_seconds)}
-            </div>
-            <div className="font-mono-data text-sm font-semibold text-[var(--color-accent-cyan)]">
-              {stats.wallet_balance_usdc?.toFixed(2) ?? "—"} USDC
-            </div>
-          </>
-        )}
-      </div>
-    </header>
-  );
-}
-
-// ─── Stats Bar ───────────────────────────────────────────────
-function StatsBar({ stats }: { stats: AgentStats }) {
-  const net = stats.total_x402_inflow_usdc - stats.total_x402_outflow_usdc;
-  const netColor = net >= 0 ? "text-[var(--color-accent-green)]" : "text-[var(--color-accent-red)]";
-
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-      {[
-        { label: "Scrapes", value: stats.total_scrapes.toString(), icon: "🔄" },
-        { label: "Extractions", value: stats.total_extractions.toString(), icon: "🧠" },
-        { label: "Feed Queries", value: stats.total_feed_queries.toString(), icon: "📊" },
-        { label: "Cached Items", value: stats.feed_items_cached.toString(), icon: "💾" },
-        { label: "Outflow", value: `$${stats.total_x402_outflow_usdc.toFixed(3)}`, icon: "📤", color: "text-[var(--color-accent-red)]" },
-        { label: "Inflow", value: `$${stats.total_x402_inflow_usdc.toFixed(3)}`, icon: "📥", color: "text-[var(--color-accent-green)]" },
-        { label: "Net P&L", value: net >= 0 ? `+$${net.toFixed(3)}` : `-$${Math.abs(net).toFixed(3)}`, icon: "💹", color: netColor },
-      ].map((stat) => (
-        <div key={stat.label} className="glass-card p-3 flex flex-col items-center text-center">
-          <span className="text-lg mb-1">{stat.icon}</span>
-          <span className={`font-mono-data text-sm font-semibold ${stat.color ?? "text-[var(--color-text-primary)]"}`}>
-            {stat.value}
-          </span>
-          <span className="text-[0.6rem] uppercase tracking-widest text-[var(--color-text-muted)] mt-1">
-            {stat.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─── Feed Table ──────────────────────────────────────────────
-function FeedTable({ items }: { items: ProxygenFeedItem[] }) {
-  return (
-    <div className="glass-card p-4 overflow-hidden">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)]">
-          LIVE FEEDS
-        </h2>
-        <span className="badge badge-cyan">{items.length} items</span>
-      </div>
-      <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
-        <table className="data-table">
-          <thead className="sticky top-0 bg-[var(--color-bg-card)]">
-            <tr>
-              <th>Source</th>
-              <th>Region</th>
-              <th>Type</th>
-              <th>Price / Value</th>
-              <th>Confidence</th>
-              <th>Cost</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.id} className="animate-fade-in">
-                <td className="font-semibold">{item.source}</td>
-                <td>
-                  <span className="mr-1">{REGION_FLAGS[item.region] ?? "🌍"}</span>
-                  <span className="text-[var(--color-text-secondary)]">{item.region}</span>
-                </td>
-                <td>
-                  <span className={`badge ${item.type === "price" ? "badge-cyan" : item.type === "sentiment" ? "badge-amber" : "badge-green"}`}>
-                    {item.type}
-                  </span>
-                </td>
-                <td>
-                  {item.type === "price"
-                    ? formatPrice(item.data.price, item.region)
-                    : item.data.sentiment_score !== undefined
-                      ? `${item.data.sentiment_score > 0 ? "+" : ""}${item.data.sentiment_score.toFixed(2)}`
-                      : "—"
-                  }
-                </td>
-                <td className={confidenceColor(item.confidence)}>
-                  {(item.confidence * 100).toFixed(0)}%
-                </td>
-                <td className="text-[var(--color-accent-amber)]">
-                  {formatUSDC(item.cost_usdc)}
-                </td>
-                <td className="text-[var(--color-text-muted)]">
-                  {formatTime(item.timestamp)}
-                </td>
-              </tr>
-            ))}
-            {items.length === 0 && (
-              <tr>
-                <td colSpan={7} className="text-center py-8 text-[var(--color-text-muted)]">
-                  Waiting for first scrape cycle...
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-// ─── Decision Log ────────────────────────────────────────────
-function DecisionLogPanel({ entries }: { entries: DecisionLogEntry[] }) {
-  return (
-    <div className="glass-card p-4 overflow-hidden">
-      <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)] mb-3">
-        AGENT DECISION LOG
-      </h2>
-      <div className="space-y-1.5 max-h-[280px] overflow-y-auto">
-        {entries.map((entry) => (
-          <div
-            key={entry.id}
-            className="flex items-start gap-2 text-xs animate-fade-in"
-          >
-            <span className="font-mono-data text-[var(--color-text-muted)] shrink-0 w-16">
-              {formatTime(entry.timestamp)}
-            </span>
-            <span className={`badge ${typeColor(entry.type)} shrink-0`}>
-              {entry.type}
-            </span>
-            <span className="text-[var(--color-text-secondary)] truncate">
-              {entry.message}
-            </span>
-          </div>
-        ))}
-        {entries.length === 0 && (
-          <div className="text-center py-4 text-[var(--color-text-muted)] text-xs">
-            No decisions yet...
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Source Health ────────────────────────────────────────────
-function SourceHealthPanel({ sources }: { sources: SourceHealth[] }) {
-  return (
-    <div className="glass-card p-4">
-      <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)] mb-3">
-        SOURCE HEALTH
-      </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-        {sources.map((src) => {
-          const sourceId = src.source_id;
-          const regionCode = sourceId.split("-").pop()?.toUpperCase() ?? "";
-          const flag = REGION_FLAGS[regionCode] ?? "🌍";
-
-          return (
-            <div
-              key={sourceId}
-              className="glass-card glass-card-hover p-3 flex flex-col items-center text-center transition-all duration-200"
-            >
-              <span className="text-lg mb-1">{flag}</span>
-              <span className="font-mono-data text-[0.7rem] font-semibold text-[var(--color-text-primary)] mb-1">
-                {sourceId.split("-")[0]}
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className={`status-dot ${src.status}`} />
-                <span className="text-[0.6rem] uppercase tracking-wider text-[var(--color-text-muted)]">
-                  {src.status}
-                </span>
-              </div>
-              <span className="font-mono-data text-[0.6rem] text-[var(--color-text-muted)] mt-1">
-                {src.avg_latency_ms}ms
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ─── P&L Tracker ─────────────────────────────────────────────
-function PnLTracker({ payments, stats }: { payments: PaymentRecord[]; stats: AgentStats }) {
-  const outflow = stats.total_x402_outflow_usdc;
-  const inflow = stats.total_x402_inflow_usdc;
-  const net = inflow - outflow;
-  const maxVal = Math.max(outflow, inflow, 0.001);
-
-  return (
-    <div className="glass-card p-4">
-      <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)] mb-3">
-        ECONOMICS
-      </h2>
-
-      {/* Bars */}
-      <div className="space-y-3 mb-4">
-        <div>
-          <div className="flex justify-between text-[0.65rem] mb-1">
-            <span className="text-[var(--color-accent-red)] uppercase tracking-wider font-semibold">Spend</span>
-            <span className="font-mono-data text-[var(--color-accent-red)]">${outflow.toFixed(4)}</span>
-          </div>
-          <div className="w-full h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-700"
-              style={{ width: `${(outflow / maxVal) * 100}%` }}
-            />
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-[0.65rem] mb-1">
-            <span className="text-[var(--color-accent-green)] uppercase tracking-wider font-semibold">Revenue</span>
-            <span className="font-mono-data text-[var(--color-accent-green)]">${inflow.toFixed(4)}</span>
-          </div>
-          <div className="w-full h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-green-600 to-green-400 rounded-full transition-all duration-700"
-              style={{ width: `${(inflow / maxVal) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Net */}
-      <div className="text-center py-2 glass-card">
-        <div className="text-[0.6rem] uppercase tracking-widest text-[var(--color-text-muted)] mb-1">Net</div>
-        <div className={`font-mono-data text-xl font-bold ${net >= 0 ? "text-[var(--color-accent-green)]" : "text-[var(--color-accent-red)]"}`}>
-          {net >= 0 ? `+$${net.toFixed(4)}` : `-$${Math.abs(net).toFixed(4)}`}
-        </div>
-      </div>
-
-      {/* Recent payments */}
-      <div className="mt-3 space-y-1 max-h-[140px] overflow-y-auto">
-        {payments.slice(0, 10).map((p) => (
-          <div key={p.id} className="flex items-center justify-between text-[0.65rem]">
-            <div className="flex items-center gap-2">
-              <span className={p.direction === "outflow" ? "text-[var(--color-accent-red)]" : "text-[var(--color-accent-green)]"}>
-                {p.direction === "outflow" ? "▼" : "▲"}
-              </span>
-              <span className="text-[var(--color-text-secondary)]">{p.service}</span>
-            </div>
-            <span className={`font-mono-data ${p.direction === "outflow" ? "text-[var(--color-accent-red)]" : "text-[var(--color-accent-green)]"}`}>
-              {p.direction === "outflow" ? "-" : "+"}${p.amount_usdc.toFixed(4)}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Kimchi Premium Banner ───────────────────────────────────
-function KimchiPremiumBanner({ items }: { items: ProxygenFeedItem[] }) {
-  // Calculate from feed items
-  const krItems = items.filter((i) => i.region === "KR" && i.type === "price" && i.data.price);
-  const usItems = items.filter((i) => i.region === "US" && i.type === "price" && i.data.price);
-
-  if (krItems.length === 0 || usItems.length === 0) return null;
-
-  const krPrice = krItems[0]!.data.price!;
-  const usPrice = usItems[0]!.data.price!;
-  const krPriceUsd = krPrice / 1320;
-  const premium = ((krPriceUsd - usPrice) / usPrice) * 100;
-
-  if (isNaN(premium)) return null;
-
-  return (
-    <div className={`glass-card p-3 flex items-center justify-between animate-pulse-glow`}>
-      <div className="flex items-center gap-3">
-        <span className="text-2xl">🔥</span>
-        <div>
-          <div className="font-orbitron text-xs font-bold tracking-wider text-[var(--color-accent-cyan)]">
-            KIMCHI PREMIUM SIGNAL
-          </div>
-          <div className="text-[0.65rem] text-[var(--color-text-secondary)]">
-            BTC price gap between Korean and US exchanges
-          </div>
-        </div>
-      </div>
-      <div className="text-right">
-        <div className={`font-mono-data text-2xl font-bold ${premium > 0 ? "text-[var(--color-accent-green)]" : "text-[var(--color-accent-red)]"}`}>
-          {premium > 0 ? "+" : ""}{premium.toFixed(1)}%
-        </div>
-        <div className="font-mono-data text-[0.6rem] text-[var(--color-text-muted)]">
-          KR: ${krPriceUsd.toFixed(0)} • US: ${usPrice.toFixed(0)}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Main Dashboard ──────────────────────────────────────────
-export default function DashboardPage() {
-  const [state, setState] = useState<DashboardState | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-
+  // Scroll to console logs
   useEffect(() => {
-    let active = true;
-
-    async function poll() {
-      try {
-        const res = await fetch(`${AGENT_API_URL}/api/dashboard`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: DashboardState = await res.json();
-        if (active) {
-          setState(data);
-          setError(null);
-          setIsConnected(true);
-        }
-      } catch {
-        if (active) {
-          setError("Cannot connect to agent. Make sure the agent is running on port 3001.");
-          setIsConnected(false);
-        }
-      }
+    if (consoleEndRef.current) {
+      consoleEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
+  }, [logs]);
 
-    // Initial fetch
-    poll();
+  // Log append helper
+  const addLog = (tag: string, message: string, className: string) => {
+    const time = new Date().toTimeString().split(" ")[0];
+    setLogs(prev => [...prev, { time, tag, className, message }]);
+  };
 
-    // Poll every 3 seconds
-    const interval = setInterval(poll, 3000);
-    return () => {
-      active = false;
-      clearInterval(interval);
+  // Flow dot animator helper
+  const animateDot = (x1: number, y1: number, x2: number, y2: number, color: string, duration: number): Promise<void> => {
+    return new Promise((resolve) => {
+      const startTime = performance.now();
+      const run = (now: number) => {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const cx = x1 + (x2 - x1) * progress;
+        const cy = y1 + (y2 - y1) * progress;
+        setFlowDot({ cx, cy, color, opacity: 0.9 });
+        if (progress < 1) {
+          requestAnimationFrame(run);
+        } else {
+          setFlowDot(null);
+          resolve();
+        }
+      };
+      requestAnimationFrame(run);
+    });
+  };
+
+  // Spawn floating USDC tag
+  const spawnFloat = (nodeId: "nd-con1" | "nd-con2") => {
+    const id = floatIdCounter.current++;
+    const coords = nodeId === "nd-con1" ? { left: "470px", top: "40px" } : { left: "470px", top: "110px" };
+    setFloats(prev => [...(prev || []), { id, text: "+0.01 USDC", ...coords }]);
+    setTimeout(() => {
+      setFloats(prev => (prev || []).filter(f => f.id !== id));
+    }, 1300);
+  };
+
+  // Simulation step controller
+  useEffect(() => {
+    if (!isAutoplay) return;
+
+    let stepTimer: NodeJS.Timeout;
+
+    const runIdle = () => {
+      setSimState("idle");
+      addLog("SYSTEM", "Agent idle. Waiting for next cron epoch (10m) or manual trigger.", "text-slate-400");
+      stepTimer = setTimeout(runScrape, 3500);
     };
-  }, []);
+
+    const runScrape = () => {
+      setSimState("scrape");
+      setCyclesCount(prev => prev + 1);
+      addLog("SYSTEM", `Initiating scrape cycle #${cyclesCount + 1}...`, "text-slate-400");
+      addLog("SAP", "Querying tool registries via Synapse SAP client...", "text-slate-400");
+      
+      stepTimer = setTimeout(async () => {
+        addLog("SAP", "Discovery registry hit: found active tool 'proxygen-scrape' (Seoul proxy node)", "text-slate-400");
+        addLog("PROXY", "Routing target fetch request through Ace Data Cloud HTTP Proxy (Seoul, KR)...", "text-cyan-400");
+        addLog("SCRAPE", "Accessing restricted Upbit BTC/KRW API orderbooks behind geo-IP gate...", "text-cyan-400");
+        
+        await animateDot(90, 60, 145, 120, "#06B6D4", 1200);
+        await animateDot(200, 120, 260, 120, "#06B6D4", 800);
+        
+        runAIExtract();
+      }, 1000);
+    };
+
+    const runAIExtract = () => {
+      setSimState("ai_extract");
+      addLog("SCRAPE", "Data payload fetched: 184KB unstructured HTML table (Korean strings)", "text-cyan-400");
+      addLog("AI", "Unstructured table sent to Ace Data GPT-4o parser for model serialization...", "text-violet-400");
+      
+      stepTimer = setTimeout(async () => {
+        await animateDot(295, 110, 295, 50, "#8B5CF6", 800);
+        addLog("AI", "Extraction finished successfully (confidence index: 99.78%). Model: gpt-4o-mini", "text-violet-400");
+        addLog("AI", "Output structured parameters verified: spot_price=₩91,240,000, depth_bids_10m=4.51M", "text-violet-400");
+        
+        setUpbitPrice(68300 + Math.floor(Math.random() * 300));
+        setUsdtPrice(66100 + Math.floor(Math.random() * 200));
+
+        await animateDot(295, 50, 295, 110, "#8B5CF6", 800);
+        runX402Settle();
+      }, 1200);
+    };
+
+    const runX402Settle = () => {
+      setSimState("x402_settle");
+      addLog("x402", "Aggregating cycle expenses. Proxy: $0.05 USDC | LLM: $0.02 USDC. Total: $0.07 USDC", "text-amber-500");
+      addLog("x402", "Initiating x402 settlement out-flow to Ace Data wallet...", "text-amber-500");
+      
+      stepTimer = setTimeout(async () => {
+        await animateDot(330, 120, 380, 120, "#22C55E", 800);
+        setNetSettled(prev => prev - 0.07);
+        addLog("x402", "Settlement tx successful. Payout hash: 5B9w...p2a1 on Solana Sepolia", "text-amber-500");
+        addLog("FEED", "Publishing structured feed parameter to SAP: kimchi_premium = +3.42%", "text-emerald-500");
+        runConsume();
+      }, 1500);
+    };
+
+    const runConsume = () => {
+      setSimState("consume");
+      addLog("FEED", "Incoming consumer query request: \"BTC Kimchi Premium Signal\"", "text-emerald-500");
+      addLog("x402", "Verifying consumer in-flow payment: 0.01 USDC received", "text-amber-500");
+      
+      stepTimer = setTimeout(async () => {
+        animateDot(435, 120, 470, 50, "#22C55E", 900).then(() => spawnFloat("nd-con1"));
+        animateDot(435, 120, 470, 120, "#22C55E", 900).then(() => spawnFloat("nd-con2"));
+        
+        setTimeout(() => {
+          setNetSettled(prev => prev + 0.02);
+          addLog("FEED", "Delivering live serialized JSON feeds to 2 active subscribers.", "text-emerald-500");
+          addLog("SYSTEM", `Cycle #${cyclesCount + 1} completed. Outflow: 0.07 USDC | Inflow: 0.02 USDC`, "text-slate-400");
+          stepTimer = setTimeout(runIdle, 3000);
+        }, 1500);
+      }, 1000);
+    };
+
+    // Run first step on mount
+    runIdle();
+
+    return () => clearTimeout(stepTimer);
+  }, [isAutoplay, cyclesCount]);
+
+  // Handle manual scrapings
+  const forceManualScrape = () => {
+    setIsAutoplay(false);
+    setAgentState("MANUAL");
+    setSimState("scrape");
+    setCyclesCount(prev => prev + 1);
+    addLog("SYSTEM", "[MANUAL] Overriding automation cron schedule. Initiating scrape cycle...", "text-slate-400");
+    addLog("SCRAPE", "Triggering Ace Data Global HTTP Proxy (Korea)...", "text-cyan-400");
+
+    setTimeout(async () => {
+      await animateDot(90, 60, 145, 120, "#06B6D4", 1000);
+      await animateDot(200, 120, 260, 120, "#06B6D4", 750);
+      setSimState("ai_extract");
+      addLog("AI", "Processing orderbook fields via GPT-4o parser...", "text-violet-400");
+      
+      setTimeout(async () => {
+        await animateDot(295, 110, 295, 50, "#8B5CF6", 800);
+        setNetSettled(prev => prev - 0.07 + 0.01);
+        addLog("x402", "Settled 0.07 USDC spend and collected 0.01 USDC query fees on Solana.", "text-amber-500");
+        addLog("SYSTEM", "[MANUAL] Scrape cycle complete. Returning to autopilot monitoring in 3s...", "text-slate-400");
+        
+        await animateDot(295, 50, 295, 110, "#8B5CF6", 800);
+        
+        setTimeout(() => {
+          setIsAutoplay(true);
+          setAgentState("AUTOPILOT");
+        }, 3000);
+      }, 1500);
+    }, 1500);
+  };
+
+  // Handle manual outage simulator
+  const simulateOutage = () => {
+    setIsAutoplay(false);
+    setAgentState("MANUAL");
+    setSimState("outage");
+    addLog("WARNING", "Proxy connection timeout from node 'kr-mobile-1' (Seoul 🇰🇷).", "text-amber-500");
+    addLog("ERROR", "Proxy scraping pipeline request failed. Health Monitor Status: CRITICAL", "text-red-500");
+
+    setTimeout(() => {
+      addLog("SYSTEM", "Initiating self-healing network failover loop...", "text-slate-400");
+      addLog("SAP", "Querying Synapse SAP DiscoveryRegistry for alternative proxy tools...", "text-slate-400");
+
+      setTimeout(() => {
+        addLog("SAP", "Discovery registry hit: found alternative healthy provider node 'kr-residential-3'", "text-slate-400");
+        addLog("SYSTEM", "Proxy pipeline re-routed. System status: RECOVERED. Resuming loop in 2s.", "text-slate-400");
+
+        setTimeout(() => {
+          setIsAutoplay(true);
+          setAgentState("AUTOPILOT");
+        }, 2000);
+      }, 2000);
+    }, 1500);
+  };
+
+  // Toggle autoplay button
+  const toggleAutoplay = () => {
+    if (isAutoplay) {
+      setIsAutoplay(false);
+      setAgentState("MANUAL");
+      addLog("SYSTEM", "Autopilot disabled. Manual override enabled.", "text-slate-400");
+    } else {
+      setIsAutoplay(true);
+      setAgentState("AUTOPILOT");
+    }
+  };
+
+  // FAQs data list
+  const faqs = [
+    {
+      q: "How does Proxygen bypass Korea and China IP restrictions?",
+      a: "Proxygen integrates with Ace Data Cloud's HTTP Proxy API, utilizing a dynamically rotating pool of residential and mobile IP gateways in restricted territories like Seoul (KR) and Beijing (CN). Every scrape query is routed through a local IP, preventing geo-blocks."
+    },
+    {
+      q: "What is the x402 payment protocol and how does it manage billing?",
+      a: "x402 is an EVM/Solana micropayment standard designed for Machine-to-Machine (M2M) billing. Proxygen holds a balance and automatically streams Solana USDC fractions to pay for resources (proxies, LLM extraction) on a per-request basis. Data consumers similarly pay the agent per query."
+    },
+    {
+      q: "How does the Synapse Agent Protocol (SAP) self-healing loop work?",
+      a: "When a target source blocks an active proxy, Proxygen's health monitor triggers a failover sequence. It queries the decentralised Synapse SAP registry, locates active alternative tools matching the required parameters, and swaps the endpoint configuration on-the-fly without service interruption."
+    },
+    {
+      q: "Can I query Proxygen feeds using my own autonomous agent?",
+      a: "Yes! Proxygen exposes standard SAP endpoints on Sepolia. Any agent configured with Synapse SAP SDK can discover the 'proxygen-scrape' tool, sign a request, and settle payments programmatically in real-time."
+    },
+    {
+      q: "What fallbacks are used if GPT-4o fails to parse the unstructured raw data?",
+      a: "If GPT-4o encounters a parsing anomaly or rate limit, Proxygen immediately reroutes the unstructured HTML payload to the cost-optimized DeepSeek-V3 engine. If the schemas mismatch, a drift incident is logged, and the agent attempts to self-heal via updated tool rules."
+    }
+  ];
 
   return (
-    <main className="flex-1 p-4 space-y-4 max-w-[1800px] mx-auto w-full">
-      <Header stats={state?.stats ?? null} />
+    <div className="flex-1 w-full min-h-screen text-[var(--color-text-primary)] font-sans relative selection:bg-cyan-500/30 selection:text-white">
+      {/* Background Meshes and Grid */}
+      <div className="fixed inset-0 z-[-3] bg-[#020617] pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_10%_20%,rgba(6,182,212,0.18)_0%,transparent_45%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_80%,rgba(34,197,94,0.15)_0%,transparent_45%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(139,92,246,0.08)_0%,transparent_50%)]" />
+      </div>
+      <div className="fixed inset-0 z-[-2] pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="fixed inset-0 z-[-1] pointer-events-none bg-[linear-gradient(to_bottom,transparent,transparent_50%,rgba(0,0,0,0.08)_50%,rgba(0,0,0,0.08))] bg-[size:100%_4px] opacity-40" />
 
-      {error && !state && (
-        <div className="glass-card p-8 text-center">
-          <div className="flex justify-center mb-4">
-            <img src="/icon.svg" alt="Proxygen Icon" className="w-16 h-16" />
-          </div>
-          <h2 className="font-orbitron text-xl font-bold text-[var(--color-accent-cyan)] mb-2">
+      {/* Header (Element 2) */}
+      <header className="sticky top-0 z-50 w-full px-6 py-4 bg-[#020617]/70 backdrop-blur-md border-b border-[var(--color-border-subtle)] flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="14" stroke="url(#logo-grad)" strokeWidth="2.5"/>
+            <path d="M11 20L15 12L17 16L21 8" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="21" cy="8" r="1.5" fill="#22C55E"/>
+            <circle cx="11" cy="20" r="1.5" fill="#06B6D4"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="11" y1="8" x2="21" y2="20" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#06B6D4"/>
+                <stop offset="100%" stop-color="#22C55E"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span className="font-orbitron font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 text-lg">
             PROXYGEN
-          </h2>
-          <p className="text-[var(--color-text-secondary)] text-sm mb-4">
-            Intelligence Command Center
-          </p>
-          <div className="glass-card p-4 max-w-md mx-auto">
-            <p className="text-[var(--color-accent-amber)] text-xs mb-2">⚠ Agent not connected</p>
-            <p className="text-[var(--color-text-muted)] text-xs">
-              {error}
-            </p>
-            <code className="block mt-2 text-[0.65rem] text-[var(--color-accent-cyan)] font-mono-data bg-[var(--color-bg-primary)] p-2 rounded">
-              cd agent && PROXYGEN_DEMO=true npm run dev
-            </code>
+          </span>
+          <div className="flex items-center gap-2 px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-[10px] font-mono-data">
+            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
+            {agentState}
           </div>
         </div>
-      )}
+        <nav className="flex items-center gap-6">
+          <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="text-xs font-mono-data text-[var(--color-text-secondary)] hover:text-cyan-400 transition-colors">
+            GITHUB
+          </Link>
+          <Link href="/dashboard" className="px-4 py-1.5 text-xs font-mono-data text-[#020617] bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-md font-semibold hover:shadow-lg hover:shadow-cyan-500/25 transition-all">
+            LAUNCH APP
+          </Link>
+        </nav>
+      </header>
 
-      {state && (
-        <>
-          {/* Stats Bar */}
-          <StatsBar stats={state.stats} />
+      <div className="max-w-[1280px] mx-auto px-6 py-12 md:py-16">
+        
+        {/* Sponsor Track Tag */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-950/40 border border-cyan-800/30 rounded-full text-[10px] font-mono-data text-cyan-400 tracking-wider mb-6">
+          🛡️ HACKATHON ENTRY: SUPERTEAM OOBE × ACE DATA CLOUD 2026
+        </div>
 
-          {/* Kimchi Premium */}
-          <KimchiPremiumBanner items={state.feed_items} />
+        {/* Hero Section (Elements 3 & 4 & 5) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-20">
+          
+          <div className="lg:col-span-7 flex flex-col items-start">
+            {/* Title (Element 3) */}
+            <h1 className="font-orbitron font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight leading-[1.05] text-white mb-6">
+              Autonomous Global
+              <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">
+                Data Intelligence
+              </span>
+            </h1>
+            
+            {/* Subtitle (Element 3) */}
+            <p className="text-base sm:text-lg text-[var(--color-text-secondary)] max-w-[620px] mb-8 leading-relaxed">
+              Breathe life into geo-restricted feeds. Proxygen routes scraped data from closed markets via global proxies, structures raw content with GPT-4o, and publishes real-time API feeds settled via x402 micropayments on Solana.
+            </p>
 
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Left: Feed Table (2 cols) */}
-            <div className="lg:col-span-2 space-y-4">
-              <FeedTable items={state.feed_items} />
-              <DecisionLogPanel entries={state.decision_log} />
+            {/* CTAs (Element 4) */}
+            <div className="flex flex-wrap gap-4 mb-8">
+              <Link href="/dashboard" className="px-7 py-3 text-sm font-mono-data text-[#020617] bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-lg font-semibold hover:scale-[1.02] hover:shadow-xl hover:shadow-cyan-500/25 transition-all">
+                Launch Command Center →
+              </Link>
+              <Link href="https://youtu.be/dQw4w9WgXcQ" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-[var(--color-border-default)] rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
+                <span className="text-red-500">🎬</span> Watch Demo Video
+              </Link>
             </div>
 
-            {/* Right: Economics + Sources (1 col) */}
-            <div className="space-y-4">
-              <PnLTracker payments={state.payments} stats={state.stats} />
-              <SourceHealthPanel sources={state.source_health} />
+            {/* Social Proof Stats (Element 5) */}
+            <div className="grid grid-cols-3 gap-4 py-4 border-t border-[var(--color-border-subtle)] w-full max-w-[580px]">
+              <div>
+                <div className="text-2xl font-bold font-mono-data text-cyan-400">{netSettled.toFixed(2)}</div>
+                <div className="text-[10px] uppercase font-mono-data tracking-widest text-[var(--color-text-muted)] mt-1">USDC Settled</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold font-mono-data text-white">{cyclesCount}+</div>
+                <div className="text-[10px] uppercase font-mono-data tracking-widest text-[var(--color-text-muted)] mt-1">Auto Cycles</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold font-mono-data text-emerald-400">99.78%</div>
+                <div className="text-[10px] uppercase font-mono-data tracking-widest text-[var(--color-text-muted)] mt-1">AI Confidence</div>
+              </div>
             </div>
           </div>
-        </>
-      )}
 
-      {/* Footer */}
-      <footer className="text-center py-3 text-[0.6rem] text-[var(--color-text-muted)]">
-        <span className="font-orbitron tracking-wider">PROXYGEN</span>
-        {" "}
-        <span>— Autonomous Global Data Intelligence Agent</span>
-        {isConnected && (
-          <span className="ml-2">• <span className="text-[var(--color-accent-green)]">●</span> Connected</span>
-        )}
+          {/* Interactive Widget Display (Element 6) */}
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            <div className="glass-card p-5 border border-[var(--color-border-accent)] shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 blur-2xl rounded-full" />
+              
+              <div className="flex justify-between items-center pb-3 border-b border-[var(--color-border-subtle)] mb-4">
+                <span className="text-[10px] font-orbitron text-cyan-400 font-bold tracking-wider flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  PIPELINE EMULATOR
+                </span>
+                
+                <div className="flex gap-2">
+                  <button onClick={forceManualScrape} className="px-2 py-1 bg-slate-800 text-[10px] font-mono-data text-slate-300 border border-slate-700/60 rounded hover:border-cyan-400 hover:text-cyan-400 transition-all">
+                    Scrape
+                  </button>
+                  <button onClick={simulateOutage} className="px-2 py-1 bg-slate-800 text-[10px] font-mono-data text-slate-300 border border-slate-700/60 rounded hover:border-red-400 hover:text-red-400 transition-all">
+                    Outage
+                  </button>
+                  <button onClick={toggleAutoplay} className={`px-2 py-1 text-[10px] font-mono-data border rounded transition-all ${isAutoplay ? "bg-cyan-950/40 border-cyan-800 text-cyan-400" : "bg-slate-800 border-slate-700 text-slate-400"}`}>
+                    {isAutoplay ? "Auto: ON" : "Auto: OFF"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Live SVG Graph & Node Boxes */}
+              <div className="relative w-full h-[230px] bg-slate-950/40 rounded-lg overflow-hidden border border-slate-800/50 mb-4">
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 580 250">
+                  <line x1="90" y1="30" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="90" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="150" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="90" y1="210" x2="145" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  
+                  <line x1="200" y1="120" x2="260" y2="120" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
+                  <line x1="295" y1="110" x2="295" y2="50" stroke={simState === "ai_extract" ? "var(--color-accent-violet)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  
+                  <line x1="330" y1="120" x2="380" y2="120" stroke={simState === "x402_settle" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1.2" />
+                  
+                  <line x1="435" y1="120" x2="470" y2="50" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="435" y1="120" x2="470" y2="120" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" />
+                  <line x1="435" y1="120" x2="470" y2="190" stroke={simState === "consume" ? "var(--color-accent-green)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
+
+                  {flowDot && (
+                    <circle cx={flowDot.cx} cy={flowDot.cy} r="3" fill={flowDot.color} opacity={flowDot.opacity} style={{ filter: `drop-shadow(0 0 4px ${flowDot.color})` }} />
+                  )}
+                </svg>
+
+                {/* Nodes overlays */}
+                <div className={`node-box src n-src1 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "20px" }}>🇰🇷 Upbit</div>
+                <div className={`node-box src n-src2 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "80px" }}>🇨🇳 Weibo</div>
+                <div className={`node-box src n-src3 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "140px" }}>🇺🇸 Binance</div>
+                <div className={`node-box src n-src4 ${simState === "scrape" ? "active" : ""}`} style={{ left: "10px", top: "200px" }}>🇪🇺 Regs</div>
+
+                <div className={`node-box proxy n-proxy ${simState === "scrape" ? "active" : ""} ${simState === "outage" ? "offline animate-pulse" : ""}`} style={{ left: "145px", top: "110px" }}>
+                  {simState === "outage" ? "❌ Outage" : "🌐 Ace Proxy"}
+                </div>
+                
+                <div className={`node-box core n-core ${["scrape", "ai_extract", "x402_settle", "consume"].includes(simState) ? "active" : ""}`} style={{ left: "260px", top: "110px" }}>🧠 PROXYGEN</div>
+                <div className={`node-box llm n-llm ${simState === "ai_extract" ? "active" : ""}`} style={{ left: "260px", top: "20px" }}>🤖 GPT-4o</div>
+                <div className={`node-box feed n-feed ${["x402_settle", "consume"].includes(simState) ? "active" : ""}`} style={{ left: "380px", top: "110px" }}>📡 x402 Feed</div>
+
+                <div className={`node-box con n-con1 ${simState === "consume" ? "active" : ""}`} style={{ left: "470px", top: "40px" }}>📊 Traders</div>
+                <div className={`node-box con n-con2 ${simState === "consume" ? "active" : ""}`} style={{ left: "470px", top: "110px" }}>🤖 Agents</div>
+                <div className={`node-box con n-con3 ${simState === "consume" ? "active" : ""}`} style={{ left: "470px", top: "180px" }}>🏛️ Protocols</div>
+
+                {/* x402 labels */}
+                <div className={`x402-tag t-proxy ${simState === "scrape" ? "active" : ""}`} style={{ left: "108px", top: "98px" }}>x402 $0.05</div>
+                <div className={`x402-tag t-llm ${simState === "ai_extract" ? "active" : ""}`} style={{ left: "232px", top: "78px" }}>x402 $0.02</div>
+                <div className={`x402-tag t-feed ${simState === "x402_settle" ? "active" : ""}`} style={{ left: "338px", top: "98px" }}>x402 $0.01</div>
+
+                {/* Floats list */}
+                {floats && floats.map(f => (
+                  <div key={f.id} className="absolute font-mono-data text-[9px] font-bold text-green-400 pointer-events-none animate-bounce" style={{ left: f.left, top: f.top }}>
+                    {f.text}
+                  </div>
+                ))}
+              </div>
+
+              {/* Logs output terminal console */}
+              <div className="w-full h-[140px] bg-[#020617] border border-slate-800 rounded-lg p-3 overflow-y-auto font-mono-data text-[10px] space-y-1.5">
+                {logs.map((log, index) => (
+                  <div key={index} className="flex gap-2 leading-relaxed animate-fade-in">
+                    <span className="text-slate-500 shrink-0">{log.time}</span>
+                    <span className={`font-bold shrink-0 ${log.className}`}>[{log.tag}]</span>
+                    <span className="text-slate-100">{log.message}</span>
+                  </div>
+                ))}
+                <div ref={consoleEndRef} />
+              </div>
+            </div>
+
+            {/* Kimchi premium banner indicator (Element 5 Part 2) */}
+            <div className="glass-card p-4 border border-[var(--color-border-subtle)] flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl animate-bounce">🔥</span>
+                <div>
+                  <span className="block font-orbitron font-bold text-xs text-amber-500 tracking-wider">
+                    ARBITRAGE gap ALERT
+                  </span>
+                  <span className="block text-[11px] text-[var(--color-text-secondary)] mt-0.5">
+                    Korea orderbooks detected in real-time
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="font-mono-data font-bold text-xl text-green-400">
+                  +{((upbitPrice / 1320 - usdtPrice) / usdtPrice * 100).toFixed(2)}%
+                </div>
+                <div className="font-mono-data text-[9px] text-[var(--color-text-muted)] mt-0.5">
+                  KR: ₩{(upbitPrice * 1320).toLocaleString()} • US: ${usdtPrice.toLocaleString()}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Core Benefits/Features Section (Element 7) */}
+        <section className="py-16">
+          <h2 className="font-orbitron font-extrabold text-2xl tracking-widest text-center text-white mb-2 uppercase">
+            Data Access Solved
+          </h2>
+          <p className="text-center text-xs font-mono-data tracking-widest text-cyan-400 mb-12">
+            STABLE PIPELINE INFRASTRUCTURE
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Feature 1 */}
+            <div className="glass-card p-8 hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-12 h-12 bg-cyan-950/40 border border-cyan-500/30 text-cyan-400 rounded-lg flex items-center justify-center mb-6 group-hover:border-cyan-400 transition-colors">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+              </div>
+              <h3 className="font-orbitron font-bold text-base text-white mb-3 tracking-wide">
+                Residential Proxy Routing
+              </h3>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                Connect directly through geo-restricted residential ISP subnets in Seoul, Beijing, and Tokyo. Powered by Ace Data Cloud Proxy nodes to safely bypass heavy firewall checks.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="glass-card p-8 hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-12 h-12 bg-violet-950/40 border border-violet-500/30 text-violet-400 rounded-lg flex items-center justify-center mb-6 group-hover:border-violet-400 transition-colors">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+              </div>
+              <h3 className="font-orbitron font-bold text-base text-white mb-3 tracking-wide">
+                LLM Structured Extraction
+              </h3>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                Structures raw foreign-language HTML files into clean JSON feeds with gpt-4o-mini. Returns orderbook prices, active bids/asks, and localized sentiment.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="glass-card p-8 hover:-translate-y-1 transition-all duration-300 group">
+              <div className="w-12 h-12 bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 rounded-lg flex items-center justify-center mb-6 group-hover:border-emerald-400 transition-colors">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-orbitron font-bold text-base text-white mb-3 tracking-wide">
+                M2M x402 Micropayments
+              </h3>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                A self-sustaining dual-flow agent. Proxygen streams micro-payments to purchase hosting, proxy IP bandwidth, and LLM requests, while charging callers fractions of a USDC per query.
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Customer Testimonials Section (Element 8) */}
+        <section className="py-12 border-t border-[var(--color-border-subtle)]">
+          <h2 className="font-orbitron font-extrabold text-2xl tracking-widest text-center text-white mb-2 uppercase">
+            Data Trust Verified
+          </h2>
+          <p className="text-center text-xs font-mono-data tracking-widest text-cyan-400 mb-12">
+            INTELLIGENCE FEEDS ADOPTION
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div className="glass-card p-6 border border-slate-800/40 relative">
+              <span className="absolute top-4 right-6 text-slate-700 text-5xl font-serif">“</span>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-6 italic">
+                Our trading desk spent thousands debugging custom VPN scripts to gather Korean market data. Proxygen automated this instantly. The kimchi premium signal paid off the x402 micropayments on day one.
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-cyan-900/60 border border-cyan-500/20 rounded-full flex items-center justify-center font-mono-data text-xs text-white">
+                  QA
+                </div>
+                <div>
+                  <span className="block text-xs font-bold text-white font-mono-data">Marcus Vance</span>
+                  <span className="block text-[10px] text-cyan-400 font-mono-data uppercase tracking-wider">Quant Lead, Vance Arbitrage Labs</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="glass-card p-6 border border-slate-800/40 relative">
+              <span className="absolute top-4 right-6 text-slate-700 text-5xl font-serif">“</span>
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-6 italic">
+                We use Proxygen endpoints to supply local Chinese sentiment indices to our autonomous agent network. The Synapse SAP discovery handles proxy failovers smoothly. It is data delivery exactly as it should be.
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-900/60 border border-emerald-500/20 rounded-full flex items-center justify-center font-mono-data text-xs text-white">
+                  DS
+                </div>
+                <div>
+                  <span className="block text-xs font-bold text-white font-mono-data">Chen Xiao</span>
+                  <span className="block text-[10px] text-emerald-400 font-mono-data uppercase tracking-wider">CTO, SomaPulse Intelligence</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* FAQ Accordion Section (Element 9) */}
+        <section className="py-16 border-t border-[var(--color-border-subtle)]">
+          <h2 className="font-orbitron font-extrabold text-2xl tracking-widest text-center text-white mb-2 uppercase">
+            Frequently Asked
+          </h2>
+          <p className="text-center text-xs font-mono-data tracking-widest text-cyan-400 mb-12">
+            TECHNICAL DEEP DIVE
+          </p>
+
+          <div className="max-w-[800px] mx-auto space-y-3">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="glass-card border border-slate-800/50 overflow-hidden">
+                <button
+                  onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                  className="w-full px-6 py-4 flex justify-between items-center text-left hover:bg-slate-800/20 transition-colors"
+                >
+                  <span className="text-xs font-semibold text-white tracking-wide">{faq.q}</span>
+                  <span className="text-cyan-400 font-bold transition-transform duration-300" style={{ transform: activeFaq === idx ? "rotate(45deg)" : "rotate(0)" }}>
+                    ＋
+                  </span>
+                </button>
+                <div
+                  className="transition-all duration-300 ease-in-out overflow-hidden"
+                  style={{
+                    maxHeight: activeFaq === idx ? "200px" : "0",
+                    borderTop: activeFaq === idx ? "1px solid var(--color-border-subtle)" : "none"
+                  }}
+                >
+                  <p className="px-6 py-4 text-xs text-[var(--color-text-secondary)] leading-relaxed bg-[#020617]/40">
+                    {faq.a}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Final Call to Action Section (Element 10) */}
+        <section className="relative overflow-hidden glass-card p-10 md:p-14 border border-[var(--color-border-accent)] text-center mb-16">
+          <div className="absolute inset-0 z-[-1] bg-gradient-to-br from-cyan-950/20 to-slate-950/50 pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+          <h2 className="font-orbitron font-extrabold text-3xl md:text-4xl text-white mb-4 tracking-tight">
+            Deploy the Global Data Oxygen
+          </h2>
+          <p className="text-xs md:text-sm text-[var(--color-text-secondary)] max-w-[580px] mx-auto mb-8 leading-relaxed">
+            Ready to integrate automated, geo-bypassed feeds into your trading system or agent runtime? Access Proxygen feeds or launch your own autonomous scraper instance instantly.
+          </p>
+
+          <div className="flex justify-center gap-4 flex-wrap">
+            <Link href="/dashboard" className="px-8 py-3.5 text-sm font-mono-data text-[#020617] bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-lg font-bold hover:scale-[1.02] transition-transform">
+              Launch Agent Dashboard
+            </Link>
+            <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="px-8 py-3.5 text-sm font-mono-data text-white bg-slate-900 border border-[var(--color-border-default)] rounded-lg hover:bg-slate-950 transition-colors">
+              Clone GitHub Repo
+            </Link>
+          </div>
+        </section>
+
+      </div>
+
+      {/* Footer Section (Element 11) */}
+      <footer className="w-full bg-[#020617] border-t border-[var(--color-border-subtle)] py-12 px-6">
+        <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <svg className="w-6 h-6" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="14" stroke="url(#logo-grad-foot)" strokeWidth="2.5"/>
+                <path d="M11 20L15 12L17 16L21 8" stroke="url(#logo-grad-foot)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="logo-grad-foot" x1="11" y1="8" x2="21" y2="20" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#06B6D4"/>
+                    <stop offset="100%" stop-color="#22C55E"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span className="font-orbitron font-extrabold tracking-widest text-white text-md">
+                PROXYGEN
+              </span>
+            </div>
+            <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed mt-1">
+              Autonomous global data intelligence agent settled via x402 on Solana.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2 max-w-[500px]">
+            <span className="tech-pill text-[10px] bg-slate-900 px-3 py-1 rounded-full text-slate-400 font-mono-data">Solana</span>
+            <span className="tech-pill text-[10px] bg-slate-900 px-3 py-1 rounded-full text-slate-400 font-mono-data">x402 Micropayments</span>
+            <span className="tech-pill text-[10px] bg-slate-900 px-3 py-1 rounded-full text-slate-400 font-mono-data">Synapse SAP v2</span>
+            <span className="tech-pill text-[10px] bg-slate-900 px-3 py-1 rounded-full text-slate-400 font-mono-data">Ace Data Cloud</span>
+            <span className="tech-pill text-[10px] bg-slate-900 px-3 py-1 rounded-full text-slate-400 font-mono-data">Next.js 16</span>
+          </div>
+
+          <div className="text-[11px] text-[var(--color-text-muted)] font-mono-data text-left md:text-right">
+            <span>Built for Superteam Agent Bounty</span>
+            <span className="block mt-1">© 2026 Edy Cu. Licensed under MIT.</span>
+          </div>
+        </div>
       </footer>
-    </main>
+    </div>
   );
 }

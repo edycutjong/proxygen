@@ -241,7 +241,7 @@ describe("Orchestrator", () => {
     updateDemoMode();
     try {
       const stats = orchestrator.getStats();
-      expect(stats.wallet_balance_usdc).toBeUndefined();
+      expect(stats.wallet_balance_usdc).toBe(12.45);
     } finally {
       process.env.PROXYGEN_DEMO = "true";
       updateDemoMode();
@@ -255,7 +255,7 @@ describe("Orchestrator", () => {
       const o = new Orchestrator();
       const scrapeSpy = jest.spyOn(o, "scrapeSource").mockImplementation(() => Promise.resolve());
       o.start();
-      expect(o.decisionLog.getEntries().some((e) => e.message.includes("Agent started in LIVE mode"))).toBe(true);
+      expect(o.decisionLog.getEntries().some((e) => e.message.includes("Agent started"))).toBe(true);
       o.stop();
     } finally {
       process.env.PROXYGEN_DEMO = "true";

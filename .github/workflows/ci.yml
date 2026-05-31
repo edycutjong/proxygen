@@ -242,11 +242,51 @@ jobs:
             dashboard/test-results/
           retention-days: 7
 
+  # ── Agent E2E ─────────────────────────────────────────────
+  agent-e2e:
+    name: "Stage 4 · Agent E2E"
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: agent/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: agent
+
+      - name: Start Agent in Demo Mode & Validate Health
+        run: |
+          npm run build
+          PROXYGEN_DEMO=true npm start &
+          echo "Waiting for Agent API to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3001/health | grep -q '"status":"ok"'; then
+              echo "✅ Agent API is healthy!"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "❌ Agent API failed to start or respond to healthcheck"
+          exit 1
+        working-directory: agent
+
+      - name: Run Submission Checker
+        run: python3 scripts/check_submission.py
+
   # ─────────────────────────────────────────────────────────
   # STAGE 5 — Performance
   # ─────────────────────────────────────────────────────────
   performance:
-    name: "Stage 5 · Performance"
+    name: "Stage 5 · Dashboard Performance"
     needs: [build]
     runs-on: ubuntu-latest
 
@@ -277,12 +317,25 @@ jobs:
           lhci autorun
         continue-on-error: true
 
+  # ── Agent Performance ────────────────────────────────────
+  agent-performance:
+    name: "Stage 5 · Agent Performance"
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Agent Scrape Benchmark
+        run: python3 scripts/bench.py
+
   # ─────────────────────────────────────────────────────────
   # STAGE 6 — Deploy Gate
   # ─────────────────────────────────────────────────────────
   deploy-gate:
     name: "Stage 6 · Deploy Gate"
-    needs: [build, e2e, performance, secret-scan, dependency-audit]
+    needs: [build, e2e, agent-e2e, performance, agent-performance, secret-scan, dependency-audit]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
@@ -297,7 +350,9 @@ jobs:
           echo "  ✅ Stage 2 — Secret Scanning (TruffleHog)"
           echo "  ✅ Stage 2 — Dependency Audit (npm)"
           echo "  ✅ Stage 3 — Build Verification (dual workspace)"
-          echo "  ✅ Stage 4 — E2E Tests (Playwright)"
-          echo "  ✅ Stage 5 — Performance (Lighthouse CI)"
+          echo "  ✅ Stage 4 — Dashboard E2E Tests (Playwright)"
+          echo "  ✅ Stage 4 — Agent E2E Tests (health probe, submission verify)"
+          echo "  ✅ Stage 5 — Dashboard Performance (Lighthouse CI)"
+          echo "  ✅ Stage 5 — Agent Performance (scrape latency benchmark)"
           echo ""
           echo "Ready for deployment."

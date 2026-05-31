@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "Proxygen — Intelligence Command Center",
   description: "Autonomous global data intelligence agent. Scrapes geo-restricted data via global proxies, structures with AI, and sells clean feeds via x402 micropayments on Solana.",
   keywords: ["proxygen", "autonomous agent", "data intelligence", "x402", "OOBE", "Ace Data Cloud", "SAP", "Solana"],
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Proxygen — Intelligence Command Center",
     description: "Autonomous global data intelligence agent. Real-time geo-restricted data scraping, AI-powered extraction, and x402 micropayment economics.",
-    url: "https://proxygen.vercel.app",
+    url: "https://proxygen.edycu.dev",
     siteName: "Proxygen",
     images: [
       {

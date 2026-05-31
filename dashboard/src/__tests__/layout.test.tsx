@@ -13,6 +13,10 @@ describe("RootLayout", () => {
   });
 
   it("should render children inside the layout structure", () => {
+    // Suppress expected hydration warning since testing-library wraps in div
+    const originalConsoleError = console.error;
+    console.error = () => {};
+
     render(
       <RootLayout>
         <div data-testid="child-element">Test Child Content</div>
@@ -22,5 +26,7 @@ describe("RootLayout", () => {
     const child = screen.getByTestId("child-element");
     expect(child).toBeTruthy();
     expect(child.textContent).toBe("Test Child Content");
+    
+    console.error = originalConsoleError;
   });
 });

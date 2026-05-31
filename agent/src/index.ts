@@ -9,7 +9,7 @@ import { registerFeedRoutes } from "./feeds/api.js";
 
 async function main(): Promise<void> {
   // ─── Banner ───
-  console.log(`
+  log("info", `
   ╔═══════════════════════════════════════════════════════════╗
   ║                                                           ║
   ║   🧪  P R O X Y G E N  v${AGENT_IDENTITY.version}                          ║
@@ -66,6 +66,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  console.error("Fatal error:", err);
+  log("error", `Fatal error: ${String(err)}`);
   process.exit(1);
 });

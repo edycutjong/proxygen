@@ -69,6 +69,7 @@ export const LLM_CONFIG = {
 } as const;
 
 /** Logging. */
+/** Logging. */
 export function log(level: "info" | "warn" | "error" | "debug", msg: string, meta?: Record<string, unknown>): void {
   const ts = new Date().toISOString();
   const prefix = `[${ts}] [${level.toUpperCase()}] [Proxygen]`;

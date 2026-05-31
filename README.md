@@ -26,7 +26,7 @@
 ## 📸 See it in Action
 
 <div align="center">
-  <img src="docs/readme.png" alt="Proxygen Dashboard" width="100%">
+  <img src="dashboard/public/og-image.png" alt="Proxygen Dashboard" width="100%">
 </div>
 
 > **3-second intelligence delivery.** Query → Proxy activates (Seoul 🇰🇷) → AI extracts structured data → x402 payment settles on Solana → Clean JSON delivered.
@@ -60,30 +60,26 @@ A quant analyst in Jakarta spends **4 hours every morning** manually checking Ko
 | **Dashboard** | Next.js 16 (App Router), React 19, Tailwind CSS v4 |
 | **HTTP Server** | Fastify 5 |
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Proxygen Agent (Node.js)                   │
-│                                                               │
-│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐ │
-│  │ Scheduler │──▶│Orchestrat│──▶│  Proxy   │──▶│   LLM    │ │
-│  │ (10 min)  │   │   or     │   │  Client  │   │ Extractor│ │
-│  └──────────┘   └────┬─────┘   └──────────┘   └──────────┘ │
-│                      │                                        │
-│  ┌──────────┐   ┌────▼─────┐   ┌──────────┐                │
-│  │  Health   │   │  Feed    │   │ Decision │                │
-│  │ Monitor   │   │  Store   │   │   Log    │                │
-│  └──────────┘   └──────────┘   └──────────┘                │
-│                      │                                        │
-│              ┌───────▼───────┐                               │
-│              │  Fastify API  │ :3001                         │
-│              │   + SSE       │                               │
-│              └───────┬───────┘                               │
-└──────────────────────┼───────────────────────────────────────┘
-                       │
-              ┌────────▼────────┐
-              │  Next.js 16     │ :3000
-              │  Dashboard      │
-              └─────────────────┘
+```mermaid
+graph TD
+    subgraph Agent["Proxygen Agent (Node.js) :3001"]
+        Scheduler["⏱️ Scheduler<br/>(10 min cron)"] --> Orchestrator["🎯 Orchestrator"]
+        Orchestrator --> ProxyClient["🌐 Proxy Client<br/>(Ace Data Cloud)"]
+        ProxyClient --> LLM["🤖 LLM Extractor<br/>(GPT-4o / DeepSeek)"]
+        Orchestrator --> FeedStore["📡 Feed Store"]
+        Orchestrator --> DecisionLog["📋 Decision Log"]
+        HealthMonitor["❤️ Health Monitor"] -.-> Orchestrator
+        FeedStore --> Fastify["🚀 Fastify API + SSE"]
+    end
+
+    subgraph Dashboard["Next.js 16 Dashboard :3000"]
+        UI["📊 Command Center UI"]
+    end
+
+    Fastify -->|"SSE / REST"| UI
+
+    style Agent fill:#0f172a,stroke:#06b6d4,stroke-width:2px,color:#f8fafc
+    style Dashboard fill:#0f172a,stroke:#22c55e,stroke-width:2px,color:#f8fafc
 ```
 
 ## 🏆 Sponsor Tracks Targeted

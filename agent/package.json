@@ -9,7 +9,7 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --silent",
     "bench": "tsx scripts/bench.ts",
     "seed": "tsx scripts/seed.ts",
     "verify": "tsx scripts/verify.ts"
@@ -17,23 +17,27 @@
   "dependencies": {
     "@acedatacloud/sdk": "latest",
     "@acedatacloud/x402-client": "latest",
-    "@oobe-protocol-labs/synapse-client-sdk": "latest",
-    "@oobe-protocol-labs/synapse-sap-sdk": "latest",
     "@coral-xyz/anchor": "^0.30.0",
+    "@fastify/cors": "^10.0.0",
+    "@oobe-protocol-labs/synapse-client-sdk": "latest",
+    "@oobe-protocol-labs/synapse-sap-sdk": "^0.13.0",
     "@solana/web3.js": "^1.95.0",
     "dotenv": "^16.4.0",
     "fastify": "^5.0.0",
-    "@fastify/cors": "^10.0.0",
-    "node-cron": "^3.0.0",
-    "nanoid": "^5.0.0"
+    "nanoid": "^5.0.0",
+    "node-cron": "^3.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.0.0",
     "@types/node": "^22.0.0",
     "@types/node-cron": "^3.0.0",
-    "tsx": "^4.0.0",
-    "typescript": "^5.7.0",
     "jest": "^29.0.0",
-    "@types/jest": "^29.0.0",
-    "ts-jest": "^29.0.0"
+    "ts-jest": "^29.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1",
+    "bigint-buffer": "^1.1.5"
   }
 }
