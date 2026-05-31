@@ -55,8 +55,8 @@ function Header({ stats }: { stats: AgentStats | null }) {
     <header className="glass-card px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[var(--color-accent-cyan)] flex items-center justify-center text-sm font-bold text-[var(--color-bg-primary)]">
-            P
+          <div className="w-8 h-8 flex items-center justify-center">
+            <img src="/icon.svg" alt="Proxygen Logo" className="w-full h-full" />
           </div>
           <h1 className="font-orbitron text-lg font-bold tracking-wider text-[var(--color-text-primary)]">
             PROXYGEN
@@ -412,7 +412,9 @@ export default function DashboardPage() {
 
       {error && !state && (
         <div className="glass-card p-8 text-center">
-          <div className="text-4xl mb-4">🧪</div>
+          <div className="flex justify-center mb-4">
+            <img src="/icon.svg" alt="Proxygen Icon" className="w-16 h-16" />
+          </div>
           <h2 className="font-orbitron text-xl font-bold text-[var(--color-accent-cyan)] mb-2">
             PROXYGEN
           </h2>
