@@ -359,11 +359,11 @@ describe("DashboardPage & Subcomponents", () => {
 
     // Check confidence coloring classes
     const upbitConfidence = screen.getByText("95%");
-    expect(upbitConfidence.className).toContain("text-[var(--color-accent-green)]");
+    expect(upbitConfidence.className).toContain("text-(--color-accent-green)");
     const binaryJpConfidence = screen.getByText("75%");
-    expect(binaryJpConfidence.className).toContain("text-[var(--color-accent-amber)]");
+    expect(binaryJpConfidence.className).toContain("text-(--color-accent-amber)");
     const telegramConfidence = screen.getByText("50%");
-    expect(telegramConfidence.className).toContain("text-[var(--color-accent-red)]");
+    expect(telegramConfidence.className).toContain("text-(--color-accent-red)");
 
     // Check decision logs and custom status badges mapping
     expect(screen.getByText("discovery msg")).toBeTruthy();

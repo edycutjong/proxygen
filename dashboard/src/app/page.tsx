@@ -264,22 +264,22 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex-1 w-full min-h-screen text-[var(--color-text-primary)] font-sans relative selection:bg-cyan-500/30 selection:text-white">
+    <div className="flex-1 w-full min-h-screen text-(--color-text-primary) font-sans relative selection:bg-cyan-500/30 selection:text-white">
       {/* Background Meshes and Grid */}
       <div className="fixed inset-0 z-[-3] bg-[#020617] pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_10%_20%,rgba(6,182,212,0.18)_0%,transparent_45%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_80%,rgba(34,197,94,0.15)_0%,transparent_45%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(139,92,246,0.08)_0%,transparent_50%)]" />
       </div>
-      <div className="fixed inset-0 z-[-2] pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px]" />
-      <div className="fixed inset-0 z-[-1] pointer-events-none bg-[linear-gradient(to_bottom,transparent,transparent_50%,rgba(0,0,0,0.08)_50%,rgba(0,0,0,0.08))] bg-[size:100%_4px] opacity-40" />
+      <div className="fixed inset-0 z-[-2] pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-size-[40px_40px]" />
+      <div className="fixed inset-0 z-[-1] pointer-events-none bg-[linear-gradient(to_bottom,transparent,transparent_50%,rgba(0,0,0,0.08)_50%,rgba(0,0,0,0.08))] bg-size-[100%_4px] opacity-40" />
 
       {/* Header (Element 2) */}
-      <header className="sticky top-0 z-50 w-full px-6 py-4 bg-[#020617]/70 backdrop-blur-md border-b border-[var(--color-border-subtle)] flex items-center justify-between">
+      <header className="sticky top-0 z-50 w-full px-6 py-4 bg-[#020617]/70 backdrop-blur-md border-b border-(--color-border-subtle) flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icon.svg" className="w-8 h-8" alt="Proxygen Logo" />
-          <span className="font-orbitron font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 text-lg">
+          <span className="font-orbitron font-extrabold tracking-widest text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-emerald-400 text-lg">
             PROXYGEN
           </span>
           <div className="flex items-center gap-2 px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-[10px] font-mono-data">
@@ -288,13 +288,13 @@ export default function LandingPage() {
           </div>
         </div>
         <nav className="flex items-center gap-6">
-          <Link href="/pitch-deck.html" target="_blank" className="text-xs font-mono-data text-[var(--color-text-secondary)] hover:text-cyan-400 transition-colors">
+          <Link href="/pitch-deck.html" target="_blank" className="text-xs font-mono-data text-(--color-text-secondary) hover:text-cyan-400 transition-colors">
             PITCH DECK
           </Link>
-          <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="text-xs font-mono-data text-[var(--color-text-secondary)] hover:text-cyan-400 transition-colors">
+          <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="text-xs font-mono-data text-(--color-text-secondary) hover:text-cyan-400 transition-colors">
             GITHUB
           </Link>
-          <Link href="/dashboard" className="px-4 py-1.5 text-xs font-mono-data text-[#020617] bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-md font-semibold hover:shadow-lg hover:shadow-cyan-500/25 transition-all">
+          <Link href="/dashboard" className="px-4 py-1.5 text-xs font-mono-data text-[#020617] bg-linear-to-r from-cyan-400 to-emerald-400 rounded-md font-semibold hover:shadow-lg hover:shadow-cyan-500/25 transition-all">
             LAUNCH APP
           </Link>
         </nav>
@@ -314,52 +314,52 @@ export default function LandingPage() {
             {/* Title (Element 3) */}
             <h1 className="font-orbitron font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight leading-[1.05] text-white mb-6">
               Autonomous Global
-              <span className="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">
+              <span className="block mt-1.5 text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-emerald-400">
                 Data Intelligence
               </span>
             </h1>
             
             {/* Subtitle (Element 3) */}
-            <p className="text-base sm:text-lg text-[var(--color-text-secondary)] max-w-[620px] mb-8 leading-relaxed">
+            <p className="text-base sm:text-lg text-(--color-text-secondary) max-w-[620px] mb-8 leading-relaxed">
               Breathe life into geo-restricted feeds. Proxygen routes scraped data from closed markets via global proxies, structures raw content with GPT-4o, and publishes real-time API feeds settled via x402 micropayments on Solana.
             </p>
 
             {/* CTAs (Element 4) */}
             <div className="flex flex-wrap gap-4 mb-8">
-              <Link href="/dashboard" className="px-7 py-3 text-sm font-mono-data text-[#020617] bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-lg font-semibold hover:scale-[1.02] hover:shadow-xl hover:shadow-cyan-500/25 transition-all">
+              <Link href="/dashboard" className="px-7 py-3 text-sm font-mono-data text-[#020617] bg-linear-to-r from-cyan-400 to-emerald-400 rounded-lg font-semibold hover:scale-[1.02] hover:shadow-xl hover:shadow-cyan-500/25 transition-all">
                 Launch Command Center →
               </Link>
-              <Link href="/pitch-deck.html" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-[var(--color-border-default)] rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
+              <Link href="/pitch-deck.html" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-(--color-border-default) rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
                 🖥️ View Pitch Deck
               </Link>
-              <Link href="https://youtu.be/dQw4w9WgXcQ" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-[var(--color-border-default)] rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
+              <Link href="https://youtu.be/dQw4w9WgXcQ" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-(--color-border-default) rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
                 <span className="text-red-500">🎬</span> Watch Demo Video
               </Link>
             </div>
 
             {/* Social Proof Stats (Element 5) */}
-            <div className="grid grid-cols-3 gap-4 py-4 border-t border-[var(--color-border-subtle)] w-full max-w-[580px]">
+            <div className="grid grid-cols-3 gap-4 py-4 border-t border-(--color-border-subtle) w-full max-w-[580px]">
               <div>
                 <div className="text-2xl font-bold font-mono-data text-cyan-400">{netSettled.toFixed(2)}</div>
-                <div className="text-[10px] uppercase font-mono-data tracking-widest text-[var(--color-text-muted)] mt-1">USDC Settled</div>
+                <div className="text-[10px] uppercase font-mono-data tracking-widest text-(--color-text-muted) mt-1">USDC Settled</div>
               </div>
               <div>
                 <div className="text-2xl font-bold font-mono-data text-white">{cyclesCount}+</div>
-                <div className="text-[10px] uppercase font-mono-data tracking-widest text-[var(--color-text-muted)] mt-1">Auto Cycles</div>
+                <div className="text-[10px] uppercase font-mono-data tracking-widest text-(--color-text-muted) mt-1">Auto Cycles</div>
               </div>
               <div>
                 <div className="text-2xl font-bold font-mono-data text-emerald-400">99.78%</div>
-                <div className="text-[10px] uppercase font-mono-data tracking-widest text-[var(--color-text-muted)] mt-1">AI Confidence</div>
+                <div className="text-[10px] uppercase font-mono-data tracking-widest text-(--color-text-muted) mt-1">AI Confidence</div>
               </div>
             </div>
           </div>
 
           {/* Interactive Widget Display (Element 6) */}
           <div className="lg:col-span-5 flex flex-col gap-4">
-            <div className="glass-card p-5 border border-[var(--color-border-accent)] shadow-2xl relative overflow-hidden">
+            <div className="glass-card p-5 border border-(--color-border-accent) shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 blur-2xl rounded-full" />
               
-              <div className="flex justify-between items-center pb-3 border-b border-[var(--color-border-subtle)] mb-4">
+              <div className="flex justify-between items-center pb-3 border-b border-(--color-border-subtle) mb-4">
                 <span className="text-[10px] font-orbitron text-cyan-400 font-bold tracking-wider flex items-center gap-1.5">
                   <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -447,14 +447,14 @@ export default function LandingPage() {
             </div>
 
             {/* Kimchi premium banner indicator (Element 5 Part 2) */}
-            <div className="glass-card p-4 border border-[var(--color-border-subtle)] flex items-center justify-between">
+            <div className="glass-card p-4 border border-(--color-border-subtle) flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl animate-bounce">🔥</span>
                 <div>
                   <span className="block font-orbitron font-bold text-xs text-amber-500 tracking-wider">
                     ARBITRAGE gap ALERT
                   </span>
-                  <span className="block text-[11px] text-[var(--color-text-secondary)] mt-0.5">
+                  <span className="block text-[11px] text-(--color-text-secondary) mt-0.5">
                     Korea orderbooks detected in real-time
                   </span>
                 </div>
@@ -463,7 +463,7 @@ export default function LandingPage() {
                 <div className="font-mono-data font-bold text-xl text-green-400">
                   +{((upbitPrice / 1320 - usdtPrice) / usdtPrice * 100).toFixed(2)}%
                 </div>
-                <div className="font-mono-data text-[9px] text-[var(--color-text-muted)] mt-0.5">
+                <div className="font-mono-data text-[9px] text-(--color-text-muted) mt-0.5">
                   KR: ₩{(upbitPrice * 1320).toLocaleString()} • US: ${usdtPrice.toLocaleString()}
                 </div>
               </div>
@@ -492,7 +492,7 @@ export default function LandingPage() {
               <h3 className="font-orbitron font-bold text-base text-white mb-3 tracking-wide">
                 Residential Proxy Routing
               </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+              <p className="text-xs text-(--color-text-secondary) leading-relaxed">
                 Connect directly through geo-restricted residential ISP subnets in Seoul, Beijing, and Tokyo. Powered by Ace Data Cloud Proxy nodes to safely bypass heavy firewall checks.
               </p>
             </div>
@@ -507,7 +507,7 @@ export default function LandingPage() {
               <h3 className="font-orbitron font-bold text-base text-white mb-3 tracking-wide">
                 LLM Structured Extraction
               </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+              <p className="text-xs text-(--color-text-secondary) leading-relaxed">
                 Structures raw foreign-language HTML files into clean JSON feeds with gpt-4o-mini. Returns orderbook prices, active bids/asks, and localized sentiment.
               </p>
             </div>
@@ -522,7 +522,7 @@ export default function LandingPage() {
               <h3 className="font-orbitron font-bold text-base text-white mb-3 tracking-wide">
                 M2M x402 Micropayments
               </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+              <p className="text-xs text-(--color-text-secondary) leading-relaxed">
                 A self-sustaining dual-flow agent. Proxygen streams micro-payments to purchase hosting, proxy IP bandwidth, and LLM requests, while charging callers fractions of a USDC per query.
               </p>
             </div>
@@ -531,7 +531,7 @@ export default function LandingPage() {
         </section>
 
         {/* Customer Testimonials Section (Element 8) */}
-        <section className="py-12 border-t border-[var(--color-border-subtle)]">
+        <section className="py-12 border-t border-(--color-border-subtle)">
           <h2 className="font-orbitron font-extrabold text-2xl tracking-widest text-center text-white mb-2 uppercase">
             Data Trust Verified
           </h2>
@@ -543,7 +543,7 @@ export default function LandingPage() {
             
             <div className="glass-card p-6 border border-slate-800/40 relative">
               <span className="absolute top-4 right-6 text-slate-700 text-5xl font-serif">“</span>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-6 italic">
+              <p className="text-xs text-(--color-text-secondary) leading-relaxed mb-6 italic">
                 Our trading desk spent thousands debugging custom VPN scripts to gather Korean market data. Proxygen automated this instantly. The kimchi premium signal paid off the x402 micropayments on day one.
               </p>
               <div className="flex items-center gap-3">
@@ -559,7 +559,7 @@ export default function LandingPage() {
 
             <div className="glass-card p-6 border border-slate-800/40 relative">
               <span className="absolute top-4 right-6 text-slate-700 text-5xl font-serif">“</span>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed mb-6 italic">
+              <p className="text-xs text-(--color-text-secondary) leading-relaxed mb-6 italic">
                 We use Proxygen endpoints to supply local Chinese sentiment indices to our autonomous agent network. The Synapse SAP discovery handles proxy failovers smoothly. It is data delivery exactly as it should be.
               </p>
               <div className="flex items-center gap-3">
@@ -577,7 +577,7 @@ export default function LandingPage() {
         </section>
 
         {/* FAQ Accordion Section (Element 9) */}
-        <section className="py-16 border-t border-[var(--color-border-subtle)]">
+        <section className="py-16 border-t border-(--color-border-subtle)">
           <h2 className="font-orbitron font-extrabold text-2xl tracking-widest text-center text-white mb-2 uppercase">
             Frequently Asked
           </h2>
@@ -604,7 +604,7 @@ export default function LandingPage() {
                     borderTop: activeFaq === idx ? "1px solid var(--color-border-subtle)" : "none"
                   }}
                 >
-                  <p className="px-6 py-4 text-xs text-[var(--color-text-secondary)] leading-relaxed bg-[#020617]/40">
+                  <p className="px-6 py-4 text-xs text-(--color-text-secondary) leading-relaxed bg-[#020617]/40">
                     {faq.a}
                   </p>
                 </div>
@@ -614,22 +614,22 @@ export default function LandingPage() {
         </section>
 
         {/* Final Call to Action Section (Element 10) */}
-        <section className="relative overflow-hidden glass-card p-10 md:p-14 border border-[var(--color-border-accent)] text-center mb-16">
-          <div className="absolute inset-0 z-[-1] bg-gradient-to-br from-cyan-950/20 to-slate-950/50 pointer-events-none" />
+        <section className="relative overflow-hidden glass-card p-10 md:p-14 border border-(--color-border-accent) text-center mb-16">
+          <div className="absolute inset-0 z-[-1] bg-linear-to-br from-cyan-950/20 to-slate-950/50 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none" />
 
           <h2 className="font-orbitron font-extrabold text-3xl md:text-4xl text-white mb-4 tracking-tight">
             Deploy the Global Data Oxygen
           </h2>
-          <p className="text-xs md:text-sm text-[var(--color-text-secondary)] max-w-[580px] mx-auto mb-8 leading-relaxed">
+          <p className="text-xs md:text-sm text-(--color-text-secondary) max-w-[580px] mx-auto mb-8 leading-relaxed">
             Ready to integrate automated, geo-bypassed feeds into your trading system or agent runtime? Access Proxygen feeds or launch your own autonomous scraper instance instantly.
           </p>
 
           <div className="flex justify-center gap-4 flex-wrap">
-            <Link href="/dashboard" className="px-8 py-3.5 text-sm font-mono-data text-[#020617] bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-lg font-bold hover:scale-[1.02] transition-transform">
+            <Link href="/dashboard" className="px-8 py-3.5 text-sm font-mono-data text-[#020617] bg-linear-to-r from-cyan-400 to-emerald-400 rounded-lg font-bold hover:scale-[1.02] transition-transform">
               Launch Agent Dashboard
             </Link>
-            <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="px-8 py-3.5 text-sm font-mono-data text-white bg-slate-900 border border-[var(--color-border-default)] rounded-lg hover:bg-slate-950 transition-colors">
+            <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="px-8 py-3.5 text-sm font-mono-data text-white bg-slate-900 border border-(--color-border-default) rounded-lg hover:bg-slate-950 transition-colors">
               Clone GitHub Repo
             </Link>
           </div>
@@ -638,7 +638,7 @@ export default function LandingPage() {
       </div>
 
       {/* Footer Section (Element 11) */}
-      <footer className="w-full bg-[#020617] border-t border-[var(--color-border-subtle)] py-12 px-6">
+      <footer className="w-full bg-[#020617] border-t border-(--color-border-subtle) py-12 px-6">
         <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
@@ -656,7 +656,7 @@ export default function LandingPage() {
                 PROXYGEN
               </span>
             </div>
-            <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed mt-1">
+            <p className="text-[11px] text-(--color-text-muted) leading-relaxed mt-1">
               Autonomous global data intelligence agent settled via x402 on Solana.
             </p>
           </div>
@@ -669,7 +669,7 @@ export default function LandingPage() {
             <span className="tech-pill text-[10px] bg-slate-900 px-3 py-1 rounded-full text-slate-400 font-mono-data">Next.js 16</span>
           </div>
 
-          <div className="text-[11px] text-[var(--color-text-muted)] font-mono-data text-left md:text-right">
+          <div className="text-[11px] text-(--color-text-muted) font-mono-data text-left md:text-right">
             <span>Built for Superteam Agent Bounty</span>
             <span className="block mt-1">© 2026 Edy Cu. Licensed under MIT.</span>
           </div>

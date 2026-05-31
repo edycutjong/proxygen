@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-[var(--color-bg-primary)]">
+      <body className="min-h-full flex flex-col bg-(--color-bg-primary)">
         {children}
       </body>
     </html>

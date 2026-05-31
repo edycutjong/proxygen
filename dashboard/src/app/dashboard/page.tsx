@@ -33,9 +33,9 @@ function formatUptime(seconds: number): string {
 }
 
 function confidenceColor(c: number): string {
-  if (c >= 0.9) return "text-[var(--color-accent-green)]";
-  if (c >= 0.7) return "text-[var(--color-accent-amber)]";
-  return "text-[var(--color-accent-red)]";
+  if (c >= 0.9) return "text-(--color-accent-green)";
+  if (c >= 0.7) return "text-(--color-accent-amber)";
+  return "text-(--color-accent-red)";
 }
 
 function typeColor(type: DecisionLogEntry["type"]): string {
@@ -60,11 +60,11 @@ function Header({ stats }: { stats: AgentStats | null }) {
           <div className="w-8 h-8 flex items-center justify-center">
             <Image src="/icon.svg" alt="Proxygen Logo" width={32} height={32} className="w-full h-full" />
           </div>
-          <h1 className="font-orbitron text-lg font-bold tracking-wider text-[var(--color-text-primary)]">
+          <h1 className="font-orbitron text-lg font-bold tracking-wider text-(--color-text-primary)">
             PROXYGEN
           </h1>
         </Link>
-        <span className="text-xs text-[var(--color-text-muted)] font-mono-data">v0.1.0</span>
+        <span className="text-xs text-(--color-text-muted) font-mono-data">v0.1.0</span>
       </div>
 
       <div className="flex items-center gap-6">
@@ -72,14 +72,14 @@ function Header({ stats }: { stats: AgentStats | null }) {
           <>
             <div className="flex items-center gap-2">
               <span className={`status-dot ${stats.is_active ? "healthy" : "down"}`} />
-              <span className="text-xs font-semibold tracking-wider text-[var(--color-text-secondary)]">
+              <span className="text-xs font-semibold tracking-wider text-(--color-text-secondary)">
                 {stats.is_active ? "ACTIVE" : "OFFLINE"}
               </span>
             </div>
-            <div className="text-xs text-[var(--color-text-muted)]">
+            <div className="text-xs text-(--color-text-muted)">
               ↑ {formatUptime(stats.uptime_seconds)}
             </div>
-            <div className="font-mono-data text-sm font-semibold text-[var(--color-accent-cyan)]">
+            <div className="font-mono-data text-sm font-semibold text-(--color-accent-cyan)">
               {stats.wallet_balance_usdc?.toFixed(2) ?? "—"} USDC
             </div>
           </>
@@ -92,7 +92,7 @@ function Header({ stats }: { stats: AgentStats | null }) {
 // ─── Stats Bar ───────────────────────────────────────────────
 function StatsBar({ stats }: { stats: AgentStats }) {
   const net = stats.total_x402_inflow_usdc - stats.total_x402_outflow_usdc;
-  const netColor = net >= 0 ? "text-[var(--color-accent-green)]" : "text-[var(--color-accent-red)]";
+  const netColor = net >= 0 ? "text-(--color-accent-green)" : "text-(--color-accent-red)";
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -101,16 +101,16 @@ function StatsBar({ stats }: { stats: AgentStats }) {
         { label: "Extractions", value: stats.total_extractions.toString(), icon: "🧠" },
         { label: "Feed Queries", value: stats.total_feed_queries.toString(), icon: "📊" },
         { label: "Cached Items", value: stats.feed_items_cached.toString(), icon: "💾" },
-        { label: "Outflow", value: `$${stats.total_x402_outflow_usdc.toFixed(3)}`, icon: "📤", color: "text-[var(--color-accent-red)]" },
-        { label: "Inflow", value: `$${stats.total_x402_inflow_usdc.toFixed(3)}`, icon: "📥", color: "text-[var(--color-accent-green)]" },
+        { label: "Outflow", value: `$${stats.total_x402_outflow_usdc.toFixed(3)}`, icon: "📤", color: "text-(--color-accent-red)" },
+        { label: "Inflow", value: `$${stats.total_x402_inflow_usdc.toFixed(3)}`, icon: "📥", color: "text-(--color-accent-green)" },
         { label: "Net P&L", value: net >= 0 ? `+$${net.toFixed(3)}` : `-$${Math.abs(net).toFixed(3)}`, icon: "💹", color: netColor },
       ].map((stat) => (
         <div key={stat.label} className="glass-card p-3 flex flex-col items-center text-center">
           <span className="text-lg mb-1">{stat.icon}</span>
-          <span className={`font-mono-data text-sm font-semibold ${stat.color ?? "text-[var(--color-text-primary)]"}`}>
+          <span className={`font-mono-data text-sm font-semibold ${stat.color ?? "text-(--color-text-primary)"}`}>
             {stat.value}
           </span>
-          <span className="text-[0.6rem] uppercase tracking-widest text-[var(--color-text-muted)] mt-1">
+          <span className="text-[0.6rem] uppercase tracking-widest text-(--color-text-muted) mt-1">
             {stat.label}
           </span>
         </div>
@@ -124,14 +124,14 @@ function FeedTable({ items }: { items: ProxygenFeedItem[] }) {
   return (
     <div className="glass-card p-4 overflow-hidden">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)]">
+        <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan)">
           LIVE FEEDS
         </h2>
         <span className="badge badge-cyan">{items.length} items</span>
       </div>
       <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
         <table className="data-table">
-          <thead className="sticky top-0 bg-[var(--color-bg-card)]">
+          <thead className="sticky top-0 bg-(--color-bg-card)">
             <tr>
               <th>Source</th>
               <th>Region</th>
@@ -148,7 +148,7 @@ function FeedTable({ items }: { items: ProxygenFeedItem[] }) {
                 <td className="font-semibold">{item.source}</td>
                 <td>
                   <span className="mr-1">{REGION_FLAGS[item.region] ?? "🌍"}</span>
-                  <span className="text-[var(--color-text-secondary)]">{item.region}</span>
+                  <span className="text-(--color-text-secondary)">{item.region}</span>
                 </td>
                 <td>
                   <span className={`badge ${item.type === "price" ? "badge-cyan" : item.type === "sentiment" ? "badge-amber" : "badge-green"}`}>
@@ -166,17 +166,17 @@ function FeedTable({ items }: { items: ProxygenFeedItem[] }) {
                 <td className={confidenceColor(item.confidence)}>
                   {(item.confidence * 100).toFixed(0)}%
                 </td>
-                <td className="text-[var(--color-accent-amber)]">
+                <td className="text-(--color-accent-amber)">
                   {formatUSDC(item.cost_usdc)}
                 </td>
-                <td className="text-[var(--color-text-muted)]">
+                <td className="text-(--color-text-muted)">
                   {formatTime(item.timestamp)}
                 </td>
               </tr>
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={7} className="text-center py-8 text-[var(--color-text-muted)]">
+                <td colSpan={7} className="text-center py-8 text-(--color-text-muted)">
                   Waiting for first scrape cycle...
                 </td>
               </tr>
@@ -192,7 +192,7 @@ function FeedTable({ items }: { items: ProxygenFeedItem[] }) {
 function DecisionLogPanel({ entries }: { entries: DecisionLogEntry[] }) {
   return (
     <div className="glass-card p-4 overflow-hidden">
-      <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)] mb-3">
+      <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan) mb-3">
         AGENT DECISION LOG
       </h2>
       <div className="space-y-1.5 max-h-[280px] overflow-y-auto">
@@ -201,19 +201,19 @@ function DecisionLogPanel({ entries }: { entries: DecisionLogEntry[] }) {
             key={entry.id}
             className="flex items-start gap-2 text-xs animate-fade-in"
           >
-            <span className="font-mono-data text-[var(--color-text-muted)] shrink-0 w-16">
+            <span className="font-mono-data text-(--color-text-muted) shrink-0 w-16">
               {formatTime(entry.timestamp)}
             </span>
             <span className={`badge ${typeColor(entry.type)} shrink-0`}>
               {entry.type}
             </span>
-            <span className="text-[var(--color-text-secondary)] truncate">
+            <span className="text-(--color-text-secondary) truncate">
               {entry.message}
             </span>
           </div>
         ))}
         {entries.length === 0 && (
-          <div className="text-center py-4 text-[var(--color-text-muted)] text-xs">
+          <div className="text-center py-4 text-(--color-text-muted) text-xs">
             No decisions yet...
           </div>
         )}
@@ -226,7 +226,7 @@ function DecisionLogPanel({ entries }: { entries: DecisionLogEntry[] }) {
 function SourceHealthPanel({ sources }: { sources: SourceHealth[] }) {
   return (
     <div className="glass-card p-4">
-      <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)] mb-3">
+      <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan) mb-3">
         SOURCE HEALTH
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
@@ -241,16 +241,16 @@ function SourceHealthPanel({ sources }: { sources: SourceHealth[] }) {
               className="glass-card glass-card-hover p-3 flex flex-col items-center text-center transition-all duration-200"
             >
               <span className="text-lg mb-1">{flag}</span>
-              <span className="font-mono-data text-[0.7rem] font-semibold text-[var(--color-text-primary)] mb-1">
+              <span className="font-mono-data text-[0.7rem] font-semibold text-(--color-text-primary) mb-1">
                 {sourceId.split("-")[0]}
               </span>
               <div className="flex items-center gap-1.5">
                 <span className={`status-dot ${src.status}`} />
-                <span className="text-[0.6rem] uppercase tracking-wider text-[var(--color-text-muted)]">
+                <span className="text-[0.6rem] uppercase tracking-wider text-(--color-text-muted)">
                   {src.status}
                 </span>
               </div>
-              <span className="font-mono-data text-[0.6rem] text-[var(--color-text-muted)] mt-1">
+              <span className="font-mono-data text-[0.6rem] text-(--color-text-muted) mt-1">
                 {src.avg_latency_ms}ms
               </span>
             </div>
@@ -270,7 +270,7 @@ function PnLTracker({ payments, stats }: { payments: PaymentRecord[]; stats: Age
 
   return (
     <div className="glass-card p-4">
-      <h2 className="font-orbitron text-xs font-bold tracking-widest text-[var(--color-accent-cyan)] mb-3">
+      <h2 className="font-orbitron text-xs font-bold tracking-widest text-(--color-accent-cyan) mb-3">
         ECONOMICS
       </h2>
 
@@ -278,24 +278,24 @@ function PnLTracker({ payments, stats }: { payments: PaymentRecord[]; stats: Age
       <div className="space-y-3 mb-4">
         <div>
           <div className="flex justify-between text-[0.65rem] mb-1">
-            <span className="text-[var(--color-accent-red)] uppercase tracking-wider font-semibold">Spend</span>
-            <span className="font-mono-data text-[var(--color-accent-red)]">${outflow.toFixed(4)}</span>
+            <span className="text-(--color-accent-red) uppercase tracking-wider font-semibold">Spend</span>
+            <span className="font-mono-data text-(--color-accent-red)">${outflow.toFixed(4)}</span>
           </div>
-          <div className="w-full h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-(--color-bg-primary) rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all duration-700"
+              className="h-full bg-linear-to-r from-red-600 to-red-400 rounded-full transition-all duration-700"
               style={{ width: `${(outflow / maxVal) * 100}%` }}
             />
           </div>
         </div>
         <div>
           <div className="flex justify-between text-[0.65rem] mb-1">
-            <span className="text-[var(--color-accent-green)] uppercase tracking-wider font-semibold">Revenue</span>
-            <span className="font-mono-data text-[var(--color-accent-green)]">${inflow.toFixed(4)}</span>
+            <span className="text-(--color-accent-green) uppercase tracking-wider font-semibold">Revenue</span>
+            <span className="font-mono-data text-(--color-accent-green)">${inflow.toFixed(4)}</span>
           </div>
-          <div className="w-full h-2 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-(--color-bg-primary) rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-green-600 to-green-400 rounded-full transition-all duration-700"
+              className="h-full bg-linear-to-r from-green-600 to-green-400 rounded-full transition-all duration-700"
               style={{ width: `${(inflow / maxVal) * 100}%` }}
             />
           </div>
@@ -304,8 +304,8 @@ function PnLTracker({ payments, stats }: { payments: PaymentRecord[]; stats: Age
 
       {/* Net */}
       <div className="text-center py-2 glass-card">
-        <div className="text-[0.6rem] uppercase tracking-widest text-[var(--color-text-muted)] mb-1">Net</div>
-        <div className={`font-mono-data text-xl font-bold ${net >= 0 ? "text-[var(--color-accent-green)]" : "text-[var(--color-accent-red)]"}`}>
+        <div className="text-[0.6rem] uppercase tracking-widest text-(--color-text-muted) mb-1">Net</div>
+        <div className={`font-mono-data text-xl font-bold ${net >= 0 ? "text-(--color-accent-green)" : "text-(--color-accent-red)"}`}>
           {net >= 0 ? `+$${net.toFixed(4)}` : `-$${Math.abs(net).toFixed(4)}`}
         </div>
       </div>
@@ -315,12 +315,12 @@ function PnLTracker({ payments, stats }: { payments: PaymentRecord[]; stats: Age
         {payments.slice(0, 10).map((p) => (
           <div key={p.id} className="flex items-center justify-between text-[0.65rem]">
             <div className="flex items-center gap-2">
-              <span className={p.direction === "outflow" ? "text-[var(--color-accent-red)]" : "text-[var(--color-accent-green)]"}>
+              <span className={p.direction === "outflow" ? "text-(--color-accent-red)" : "text-(--color-accent-green)"}>
                 {p.direction === "outflow" ? "▼" : "▲"}
               </span>
-              <span className="text-[var(--color-text-secondary)]">{p.service}</span>
+              <span className="text-(--color-text-secondary)">{p.service}</span>
             </div>
-            <span className={`font-mono-data ${p.direction === "outflow" ? "text-[var(--color-accent-red)]" : "text-[var(--color-accent-green)]"}`}>
+            <span className={`font-mono-data ${p.direction === "outflow" ? "text-(--color-accent-red)" : "text-(--color-accent-green)"}`}>
               {p.direction === "outflow" ? "-" : "+"}${p.amount_usdc.toFixed(4)}
             </span>
           </div>
@@ -350,19 +350,19 @@ function KimchiPremiumBanner({ items }: { items: ProxygenFeedItem[] }) {
       <div className="flex items-center gap-3">
         <span className="text-2xl">🔥</span>
         <div>
-          <div className="font-orbitron text-xs font-bold tracking-wider text-[var(--color-accent-cyan)]">
+          <div className="font-orbitron text-xs font-bold tracking-wider text-(--color-accent-cyan)">
             KIMCHI PREMIUM SIGNAL
           </div>
-          <div className="text-[0.65rem] text-[var(--color-text-secondary)]">
+          <div className="text-[0.65rem] text-(--color-text-secondary)">
             BTC price gap between Korean and US exchanges
           </div>
         </div>
       </div>
       <div className="text-right">
-        <div className={`font-mono-data text-2xl font-bold ${premium > 0 ? "text-[var(--color-accent-green)]" : "text-[var(--color-accent-red)]"}`}>
+        <div className={`font-mono-data text-2xl font-bold ${premium > 0 ? "text-(--color-accent-green)" : "text-(--color-accent-red)"}`}>
           {premium > 0 ? "+" : ""}{premium.toFixed(1)}%
         </div>
-        <div className="font-mono-data text-[0.6rem] text-[var(--color-text-muted)]">
+        <div className="font-mono-data text-[0.6rem] text-(--color-text-muted)">
           KR: ${krPriceUsd.toFixed(0)} • US: ${usPrice.toFixed(0)}
         </div>
       </div>
@@ -417,18 +417,18 @@ export default function DashboardPage() {
           <div className="flex justify-center mb-4">
             <Image src="/icon.svg" alt="Proxygen Icon" width={64} height={64} />
           </div>
-          <h2 className="font-orbitron text-xl font-bold text-[var(--color-accent-cyan)] mb-2">
+          <h2 className="font-orbitron text-xl font-bold text-(--color-accent-cyan) mb-2">
             PROXYGEN
           </h2>
-          <p className="text-[var(--color-text-secondary)] text-sm mb-4">
+          <p className="text-(--color-text-secondary) text-sm mb-4">
             Intelligence Command Center
           </p>
           <div className="glass-card p-4 max-w-md mx-auto">
-            <p className="text-[var(--color-accent-amber)] text-xs mb-2">⚠ Agent not connected</p>
-            <p className="text-[var(--color-text-muted)] text-xs">
+            <p className="text-(--color-accent-amber) text-xs mb-2">⚠ Agent not connected</p>
+            <p className="text-(--color-text-muted) text-xs">
               {error}
             </p>
-            <code className="block mt-2 text-[0.65rem] text-[var(--color-accent-cyan)] font-mono-data bg-[var(--color-bg-primary)] p-2 rounded">
+            <code className="block mt-2 text-[0.65rem] text-(--color-accent-cyan) font-mono-data bg-(--color-bg-primary) p-2 rounded">
               cd agent && PROXYGEN_DEMO=true npm run dev
             </code>
           </div>
@@ -461,12 +461,12 @@ export default function DashboardPage() {
       )}
 
       {/* Footer */}
-      <footer className="text-center py-3 text-[0.6rem] text-[var(--color-text-muted)]">
+      <footer className="text-center py-3 text-[0.6rem] text-(--color-text-muted)">
         <span className="font-orbitron tracking-wider">PROXYGEN</span>
         {" "}
         <span>— Autonomous Global Data Intelligence Agent</span>
         {isConnected && (
-          <span className="ml-2">• <span className="text-[var(--color-accent-green)]">●</span> Connected</span>
+          <span className="ml-2">• <span className="text-(--color-accent-green)">●</span> Connected</span>
         )}
       </footer>
     </main>
