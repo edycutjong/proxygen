@@ -264,7 +264,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex-1 w-full min-h-screen text-(--color-text-primary) font-sans relative selection:bg-cyan-500/30 selection:text-white">
+    <main className="flex-1 w-full min-h-screen text-(--color-text-primary) font-sans relative selection:bg-cyan-500/30 selection:text-white">
       {/* Background Meshes and Grid */}
       <div className="fixed inset-0 z-[-3] bg-[#020617] pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_10%_20%,rgba(6,182,212,0.18)_0%,transparent_45%)]" />
@@ -282,19 +282,19 @@ export default function LandingPage() {
           <span className="font-orbitron font-extrabold tracking-widest text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-emerald-400 text-lg">
             PROXYGEN
           </span>
-          <div className="flex items-center gap-2 px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-[10px] font-mono-data">
+          <div className="hidden sm:flex items-center gap-2 px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-[10px] font-mono-data">
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
             {agentState}
           </div>
         </div>
-        <nav className="flex items-center gap-6">
-          <Link href="/pitch-deck.html" target="_blank" className="text-xs font-mono-data text-(--color-text-secondary) hover:text-cyan-400 transition-colors">
+        <nav className="flex items-center gap-3 sm:gap-6">
+          <Link href="/pitch-deck.html" target="_blank" className="hidden sm:block text-xs font-mono-data text-(--color-text-secondary) hover:text-cyan-400 transition-colors">
             PITCH DECK
           </Link>
-          <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="text-xs font-mono-data text-(--color-text-secondary) hover:text-cyan-400 transition-colors">
+          <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="hidden sm:block text-xs font-mono-data text-(--color-text-secondary) hover:text-cyan-400 transition-colors">
             GITHUB
           </Link>
-          <Link href="/dashboard" className="px-4 py-1.5 text-xs font-mono-data text-[#020617] bg-linear-to-r from-cyan-400 to-emerald-400 rounded-md font-semibold hover:shadow-lg hover:shadow-cyan-500/25 transition-all">
+          <Link href="/dashboard" className="px-3 sm:px-4 py-1.5 text-xs font-mono-data text-[#020617] bg-linear-to-r from-cyan-400 to-emerald-400 rounded-md font-semibold hover:shadow-lg hover:shadow-cyan-500/25 transition-all">
             LAUNCH APP
           </Link>
         </nav>
@@ -393,7 +393,7 @@ export default function LandingPage() {
 
               {/* Live SVG Graph & Node Boxes */}
               <div className="relative w-full h-[230px] bg-slate-950/40 rounded-lg overflow-hidden border border-slate-800/50 mb-4">
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 580 250">
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 580 250">
                   <line x1="90" y1="32" x2="145" y2="122" stroke={simState === "scrape" ? "var(--color-accent-cyan)" : "rgba(255,255,255,0.05)"} strokeWidth="1" strokeDasharray="3 3" />
                   <line x1="90" y1="92" x2="145" y2="122" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="3 3" />
                   <line x1="90" y1="152" x2="145" y2="122" stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="3 3" />
@@ -680,6 +680,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }

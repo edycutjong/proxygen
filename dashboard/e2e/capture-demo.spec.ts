@@ -33,6 +33,12 @@ test.use({
 });
 
 test.describe("Proxygen — Demo Capture", () => {
+  test.beforeEach(async ({}, testInfo) => {
+    test.setTimeout(120000);
+    if (testInfo.project.name !== "chromium") {
+      test.skip();
+    }
+  });
 
   test("01 — Dashboard overview (viewport)", async ({ page }) => {
     await page.goto("/");
@@ -98,7 +104,7 @@ test.describe("Proxygen — Demo Capture", () => {
     await page.waitForTimeout(3000);
 
     // Scroll to feed cards
-    const feeds = page.locator("[class*=feed], [class*=Feed], [class*=card], [class*=Card]");
+    const feeds = page.locator(".glass-card");
     const feedCount = await feeds.count();
     if (feedCount > 0) {
       await feeds.first().scrollIntoViewIfNeeded();
@@ -173,7 +179,7 @@ test.describe("Proxygen — Demo Capture", () => {
     }
 
     // Hover over interactive cards
-    const cards = page.locator("[class*=card], [class*=Card]");
+    const cards = page.locator(".glass-card");
     const cardCount = await cards.count();
     for (let i = 0; i < Math.min(cardCount, 5); i++) {
       const card = cards.nth(i);
