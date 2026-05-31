@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="docs/assets/icon.svg" width="96" alt="Proxygen Logo">
   <h1>Proxygen 🧪</h1>
   <p><em>Autonomous agent that scrapes geo-restricted data via global proxies, structures it with AI, and sells clean feeds — all settled via x402 micropayments on Solana.</em></p>
   <img src="docs/readme-hero.png" alt="Proxygen" width="100%">
@@ -7,6 +8,8 @@
 
   [![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-06b6d4?style=for-the-badge)](https://proxygen-dashboard-production.up.railway.app)
   [![Pitch Video](https://img.shields.io/badge/🎬_Pitch-Video-ef4444?style=for-the-badge)](https://youtu.be/dQw4w9WgXcQ)
+  [![Pitch Deck Outline](https://img.shields.io/badge/📋_Pitch_Deck-Outline-38b2ac?style=for-the-badge)](docs/proxygen_pitch_deck.md)
+  [![Interactive Slides](https://img.shields.io/badge/🖥️_Interactive-Slides-22c55e?style=for-the-badge)](docs/proxygen_pitch_deck.html)
   [![Built for OOBE × Ace Data Cloud](https://img.shields.io/badge/Superteam-OOBE_×_Ace_Data_Cloud-8b5cf6?style=for-the-badge)](https://superteam.fun/earn/listing/autonomous-agent-bounty-oobe-ace-data-cloud)
 
   <br/>

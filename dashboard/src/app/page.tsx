@@ -24,7 +24,7 @@ export default function LandingPage() {
     { time: "14:21:40", tag: "SYSTEM", className: "text-slate-400", message: "Proxygen Runtime v2.0.0 initializing on node-solana-mainnet..." },
     { time: "14:21:41", tag: "SAP", className: "text-slate-400", message: "Autodiscovered SAP Tool Registry. 3 tools synced: proxygen-scrape, proxygen-analyze, proxygen-route." }
   ]);
-  const consoleEndRef = useRef<HTMLDivElement>(null);
+  const consoleContainerRef = useRef<HTMLDivElement>(null);
   
   // Custom Flow Dot positions
   const [flowDot, setFlowDot] = useState<{ cx: number; cy: number; color: string; opacity: number } | null>(null);
@@ -40,10 +40,13 @@ export default function LandingPage() {
   const [floats, setFloats] = useState<{ id: number; text: string; left: string; top: string }[] | null>(null);
   const floatIdCounter = useRef(0);
 
-  // Scroll to console logs
+  // Scroll only the console container to the bottom on new logs (does not affect window scroll)
   useEffect(() => {
-    if (consoleEndRef.current) {
-      consoleEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (consoleContainerRef.current) {
+      consoleContainerRef.current.scrollTo({
+        top: consoleContainerRef.current.scrollHeight,
+        behavior: "smooth"
+      });
     }
   }, [logs]);
 
@@ -274,18 +277,8 @@ export default function LandingPage() {
       {/* Header (Element 2) */}
       <header className="sticky top-0 z-50 w-full px-6 py-4 bg-[#020617]/70 backdrop-blur-md border-b border-[var(--color-border-subtle)] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="14" stroke="url(#logo-grad)" strokeWidth="2.5"/>
-            <path d="M11 20L15 12L17 16L21 8" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="21" cy="8" r="1.5" fill="#22C55E"/>
-            <circle cx="11" cy="20" r="1.5" fill="#06B6D4"/>
-            <defs>
-              <linearGradient id="logo-grad" x1="11" y1="8" x2="21" y2="20" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#06B6D4"/>
-                <stop offset="100%" stop-color="#22C55E"/>
-              </linearGradient>
-            </defs>
-          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon.svg" className="w-8 h-8" alt="Proxygen Logo" />
           <span className="font-orbitron font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 text-lg">
             PROXYGEN
           </span>
@@ -295,6 +288,9 @@ export default function LandingPage() {
           </div>
         </div>
         <nav className="flex items-center gap-6">
+          <Link href="/pitch-deck.html" target="_blank" className="text-xs font-mono-data text-[var(--color-text-secondary)] hover:text-cyan-400 transition-colors">
+            PITCH DECK
+          </Link>
           <Link href="https://github.com/edycutjong/proxygen" target="_blank" className="text-xs font-mono-data text-[var(--color-text-secondary)] hover:text-cyan-400 transition-colors">
             GITHUB
           </Link>
@@ -332,6 +328,9 @@ export default function LandingPage() {
             <div className="flex flex-wrap gap-4 mb-8">
               <Link href="/dashboard" className="px-7 py-3 text-sm font-mono-data text-[#020617] bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-lg font-semibold hover:scale-[1.02] hover:shadow-xl hover:shadow-cyan-500/25 transition-all">
                 Launch Command Center →
+              </Link>
+              <Link href="/pitch-deck.html" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-[var(--color-border-default)] rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
+                🖥️ View Pitch Deck
               </Link>
               <Link href="https://youtu.be/dQw4w9WgXcQ" target="_blank" className="px-7 py-3 text-sm font-mono-data text-white bg-slate-800/40 border border-[var(--color-border-default)] rounded-lg hover:border-cyan-400 hover:bg-slate-800/60 transition-all flex items-center gap-2">
                 <span className="text-red-500">🎬</span> Watch Demo Video
@@ -436,7 +435,7 @@ export default function LandingPage() {
               </div>
 
               {/* Logs output terminal console */}
-              <div className="w-full h-[140px] bg-[#020617] border border-slate-800 rounded-lg p-3 overflow-y-auto font-mono-data text-[10px] space-y-1.5">
+              <div ref={consoleContainerRef} className="w-full h-[140px] bg-[#020617] border border-slate-800 rounded-lg p-3 overflow-y-auto font-mono-data text-[10px] space-y-1.5">
                 {logs.map((log, index) => (
                   <div key={index} className="flex gap-2 leading-relaxed animate-fade-in">
                     <span className="text-slate-500 shrink-0">{log.time}</span>
@@ -444,7 +443,6 @@ export default function LandingPage() {
                     <span className="text-slate-100">{log.message}</span>
                   </div>
                 ))}
-                <div ref={consoleEndRef} />
               </div>
             </div>
 
