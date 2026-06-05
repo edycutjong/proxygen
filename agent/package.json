@@ -17,7 +17,7 @@
   "dependencies": {
     "@acedatacloud/sdk": "latest",
     "@acedatacloud/x402-client": "latest",
-    "@coral-xyz/anchor": "^0.30.0",
+    "@coral-xyz/anchor": "^0.32.1",
     "@fastify/cors": "^10.0.0",
     "@oobe-protocol-labs/synapse-client-sdk": "latest",
     "@oobe-protocol-labs/synapse-sap-sdk": "^0.13.0",
