@@ -73,9 +73,12 @@ export const LLM_CONFIG = {
 export function log(level: "info" | "warn" | "error" | "debug", msg: string, meta?: Record<string, unknown>): void {
   const ts = new Date().toISOString();
   const prefix = `[${ts}] [${level.toUpperCase()}] [Proxygen]`;
+  // `msg` can carry remote-derived text (scrape/LLM error strings), so it must never
+  // sit in console.log's format-string position — a stray `%s` there would consume
+  // `meta` and silently drop the structured context. Keep the format literal constant.
   if (meta) {
-    console.log(`${prefix} ${msg}`, meta);
+    console.log("%s %s", prefix, msg, meta);
   } else {
-    console.log(`${prefix} ${msg}`);
+    console.log("%s %s", prefix, msg);
   }
 }
