@@ -99,16 +99,28 @@ describe("config", () => {
   it("should log message without meta", () => {
     config.log("info", "Hello test log");
     expect(consoleSpy).toHaveBeenCalled();
-    const lastCall = consoleSpy.mock.calls[0]?.[0] as string;
-    expect(lastCall).toContain("[INFO] [Proxygen] Hello test log");
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "%s %s",
+      expect.stringContaining("[INFO] [Proxygen]"),
+      "Hello test log"
+    );
   });
 
   it("should log message with meta", () => {
     const meta = { foo: "bar" };
     config.log("error", "Hello test error", meta);
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[ERROR] [Proxygen] Hello test error"),
+      "%s %s",
+      expect.stringContaining("[ERROR] [Proxygen]"),
+      "Hello test error",
       meta
     );
+  });
+
+  it("should not let a message expand format specifiers", () => {
+    const meta = { foo: "bar" };
+    config.log("warn", "scraped 100%s of source", meta);
+    // `msg` stays a plain argument, so `%s` inside it can never swallow `meta`.
+    expect(consoleSpy.mock.calls[0]?.[3]).toBe(meta);
   });
 });
