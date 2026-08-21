@@ -166,6 +166,30 @@ describe("extractWithLLM", () => {
       const res = await extractWithLLM(sentimentSource("naver-kr"), htmlText, "KR-residential", 0.05);
       expect(res.feed_item.data.sentiment_score).toBe(0.1);
     });
+
+    describe("HTML sanitization (CWE-116 regression)", () => {
+      // Real bypass of the old single-pass `replace(/<[^>]+>/g, "")`:
+      // that regex only matches a tag that has a literal closing `>`, so a
+      // deliberately unterminated tag sails through completely untouched.
+      it("neutralizes an unterminated tag with no closing '>'", async () => {
+        const htmlText = "<script src=https://evil.example/x.js";
+        const res = await extractWithLLM(sentimentSource("naver-kr"), htmlText, "KR-residential", 0.05);
+        const rawText = res.feed_item.data.raw_text as string;
+        expect(rawText).not.toContain("<script");
+        expect(rawText).not.toMatch(/[<>]/);
+      });
+
+      // The classic reformation payload from the ticket
+      // (<scr<script>ipt> — nested but *terminated*). Locked in as a
+      // regression test: no bare '<' or '>' may survive sanitization.
+      it("neutralizes the classic nested/overlapping <scr<script>ipt> payload", async () => {
+        const htmlText = "<scr<script>ipt>alert(1)</scr<script>ipt>";
+        const res = await extractWithLLM(sentimentSource("naver-kr"), htmlText, "KR-residential", 0.05);
+        const rawText = res.feed_item.data.raw_text as string;
+        expect(rawText).not.toContain("<script>");
+        expect(rawText).not.toMatch(/[<>]/);
+      });
+    });
   });
 
   describe("when DEMO_MODE is false", () => {

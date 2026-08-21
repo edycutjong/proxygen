@@ -195,6 +195,34 @@ function extractFromJson(
   }
 }
 
+/**
+ * Strip all HTML markup from untrusted scraped text.
+ *
+ * A single `replace(/<[^>]+>/g, "")` pass is not safe here: it requires a
+ * literal `>` to recognize a tag, so a deliberately *unterminated* tag such
+ * as `<script src=https://evil.example/x.js` (no closing `>`) never matches
+ * at all and is passed straight through byte-for-byte. That's a real CWE-116
+ * incomplete-sanitization bug — this text ends up as `raw_text` in a
+ * feed item that may be consumed by an LLM or a downstream customer feed,
+ * so surviving markup is a genuine injection vector, not just cosmetic.
+ *
+ * Fix: (1) loop the tag-strip until the string stops changing, so no
+ * matched-and-removed pass can ever expose a new complete tag underneath
+ * (defense in depth against any nested/overlapping construct, present or
+ * future); then (2) strip any *remaining* bare `<` / `>` characters —
+ * closing the unterminated-tag gap above, since a lone `<` can never be
+ * interpreted as markup once it can't appear in the output at all.
+ */
+function stripHtml(html: string): string {
+  let sanitized = html;
+  let previous: string;
+  do {
+    previous = sanitized;
+    sanitized = sanitized.replace(/<[^>]+>/g, "");
+  } while (sanitized !== previous);
+  return sanitized.replace(/[<>]/g, "");
+}
+
 /** Extract data from HTML using simple patterns (for sentiment sources). */
 function extractFromHtml(
   source: DataSource,
@@ -211,6 +239,6 @@ function extractFromHtml(
 
   return {
     sentiment_score: Math.round(sentimentScore * 100) / 100,
-    raw_text: html.replace(/<[^>]+>/g, "").trim().slice(0, 200),
+    raw_text: stripHtml(html).trim().slice(0, 200),
   };
 }
